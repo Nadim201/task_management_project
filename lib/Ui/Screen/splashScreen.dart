@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:task_management_project/Ui/Utils/assets_path.dart';
 import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 
-import 'loginScreen.dart';
+import 'sign_in.dart';
 
 class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
@@ -15,10 +15,10 @@ class Splashscreen extends StatefulWidget {
 class _SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
-
     super.initState();
     moveToNextScreen();
   }
+
   Future moveToNextScreen() async {
     await Future.delayed(
       const Duration(seconds: 3),
@@ -26,15 +26,13 @@ class _SplashscreenState extends State<Splashscreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (builder) => const Loginscreen(),
+        builder: (builder) => const SignIn(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       body: Backgroundimage(
         child: SvgPicture.asset(

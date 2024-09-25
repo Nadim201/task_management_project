@@ -22,7 +22,10 @@ class _BackgroundImageState extends State<Backgroundimage> {
             fit: BoxFit.cover, // Cover entire screen
           ),
         ),
-        Center(child: widget.child),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(child: widget.child),
+        )
       ],
     );
   }
