@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:task_management_project/Ui/Screen/splashScreen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:task_management_project/Ui/Screen/onboarding/splashScreen.dart';
 import 'package:task_management_project/Ui/Utils/color.dart';
 
 class TaskManagerApp extends StatelessWidget {
   const TaskManagerApp({super.key});
 
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        fontFamily: GoogleFonts.poppins().fontFamily,
         colorSchemeSeed: AppColor.themeColor,
         textTheme: const TextTheme(),
         inputDecorationTheme: _inputDecorationTheme(),
