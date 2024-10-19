@@ -10,3 +10,4 @@ class NetworkResponse {
       this.errorMessage = "Something went wrong!",
       this.responseData});
 }
+//

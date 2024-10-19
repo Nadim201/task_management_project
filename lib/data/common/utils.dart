@@ -7,9 +7,11 @@ class Utils {
   static const String reset = '$baseUrl/RecoverResetPassword';
   static const String addTask = '$baseUrl/createTask';
   static const String deleteTask = '$baseUrl/deleteTask/';
+  static const String updateTask = '$baseUrl/updateTaskStatus/';
   static const String newTaskList = '$baseUrl/listTaskByStatus/New';
   static const String completedTaskList = '$baseUrl/listTaskByStatus/Completed';
   static const String cancelTaskList = '$baseUrl/listTaskByStatus/Cancel';
   static const String progressingTaskList =
       '$baseUrl/listTaskByStatus/Progressing';
 }
+//

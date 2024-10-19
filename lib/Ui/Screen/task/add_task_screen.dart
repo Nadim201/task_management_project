@@ -18,64 +18,75 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   final TextEditingController _desTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool isLoading = false;
+  bool refreshPreviewPage = false;
 
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    return Scaffold(
-      appBar: const CustomAppbar(),
-      body: Backgroundimage(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Text('Add New Task',
-                      style: textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w700, fontSize: 30)),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  TextFormField(
-                    controller: _subTEController,
-                    decoration: const InputDecoration(hintText: 'Subject'),
-                    validator: (String? value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Form is blank';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  TextFormField(
-                    controller: _desTEController,
-                    maxLines: 6,
-                    decoration: const InputDecoration(hintText: 'Description'),
-                    validator: (String? value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Form is blank';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  ElevatedButton(
-                      onPressed: _onTabSubmit,
-                      child: const Icon(
-                        Icons.arrow_circle_right_outlined,
-                        size: 30,
-                      ))
-                ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          return;
+        }
+        Navigator.pop(context, refreshPreviewPage);
+      },
+      child: Scaffold(
+        appBar: const CustomAppbar(),
+        body: Backgroundimage(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Text('Add New Task',
+                        style: textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w700, fontSize: 30)),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    TextFormField(
+                      controller: _subTEController,
+                      decoration: const InputDecoration(hintText: 'Subject'),
+                      validator: (String? value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Form is blank';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    TextFormField(
+                      controller: _desTEController,
+                      maxLines: 6,
+                      decoration:
+                          const InputDecoration(hintText: 'Description'),
+                      validator: (String? value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Form is blank';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    ElevatedButton(
+                        onPressed: _onTabSubmit,
+                        child: const Icon(
+                          Icons.arrow_circle_right_outlined,
+                          size: 30,
+                        ))
+                  ],
+                ),
               ),
             ),
           ),
@@ -93,7 +104,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   Future<void> _addTask() async {
     isLoading = true;
     setState(() {});
-
     Map<String, dynamic> bodyRequest = {
       "title": _subTEController.text.trim(),
       "description": _desTEController.text.trim(),
@@ -108,6 +118,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     setState(() {});
 
     if (response.isSuccess) {
+      refreshPreviewPage = true;
       _clearTextFiled();
       setState(() {});
       showSnackBarMessage(context, 'Task Added');

@@ -93,28 +93,6 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
     );
   }
 
-  Future<void> onTabDelete() async {
-    await deleteTask(widget.taskModel.sId.toString());
-    widget.deleteId();
-  }
-
-  Future<void> deleteTask(String id) async {
-    isLoading = true;
-    setState(() {});
-
-    final NetworkResponse response =
-        await NetworkCaller().getRequest(Utils.deleteTask + id);
-
-    isLoading = false;
-    setState(() {});
-
-    if (response.isSuccess) {
-      showSnackBarMessage(context, 'Item deleted');
-    } else {
-      showSnackBarMessage(context, response.errorMessage, true);
-    }
-  }
-
   void onTabEdit(BuildContext context) {
     showDialog(
       context: context,
@@ -123,8 +101,12 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
           title: const Text('Edit Status'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
-            children:
-                ['New', 'Complete', 'Cancel', 'Progressing'].map((status) {
+            children: [
+              'New',
+              'Complete',
+              'Cancel',
+              'Progressing',
+            ].map((status) {
               return ListTile(
                 onTap: () {
                   Navigator.pop(context);
@@ -147,12 +129,34 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
     );
   }
 
+  Future<void> onTabDelete() async {
+    await deleteTask(widget.taskModel.sId.toString());
+    widget.deleteId();
+  }
+
+  Future<void> deleteTask(String id) async {
+    isLoading = true;
+    setState(() {});
+
+    final NetworkResponse response =
+        await NetworkCaller().getRequest(Utils.deleteTask + id);
+
+    isLoading = false;
+    setState(() {});
+
+    if (response.isSuccess) {
+      showSnackBarMessage(context, 'Item deleted');
+    } else {
+      showSnackBarMessage(context, response.errorMessage, true);
+    }
+  }
+
   Future<void> updateTaskStatus(String taskId, String newStatus) async {
     setState(() {
       isLoading = true;
     });
 
-    final String url = '${Utils.baseUrl}/updateTaskStatus/$taskId/$newStatus';
+    final String url = '${Utils.updateTask}/$taskId/$newStatus';
 
     final NetworkResponse response = await NetworkCaller().getRequest(url);
 
@@ -170,3 +174,4 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
     }
   }
 }
+//

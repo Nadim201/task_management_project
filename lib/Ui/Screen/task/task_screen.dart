@@ -109,11 +109,14 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     );
   }
 
-  void _onTabAddTask() {
-    Navigator.push(
+  Future<void> _onTabAddTask() async {
+    final bool shouldRefresh = await Navigator.push(
       context,
       MaterialPageRoute(builder: (builder) => const AddTaskScreen()),
     );
+    if (shouldRefresh == true) {
+      getNewTaskScreen();
+    }
   }
 
   void onTaskDelete(int index) {
