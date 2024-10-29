@@ -1,5 +1,5 @@
 class Utils {
-  static const String baseUrl = 'http://152.42.163.176:2006/api/v1';
+  static const String baseUrl = 'http://35.73.30.144:2005/api/v1';
   static const String registration = '$baseUrl/Registration';
   static const String login = '$baseUrl/Login';
   static const String forgot = '$baseUrl/RecoverVerifyEmail/';
