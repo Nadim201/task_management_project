@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,12 @@ class NetworkCaller {
           statusCode: response.statusCode,
         );
       }
+    } on SocketException {
+      return NetworkResponse(
+        isSuccess: false,
+        statusCode: -1,
+        errorMessage: 'No Internet connection. Please check your network.',
+      );
     } catch (e) {
       return NetworkResponse(
         isSuccess: false,

@@ -35,21 +35,22 @@ class _ProgressingTaskScreenState extends State<ProgressingTaskScreen> {
           onRefresh: () async {
             getProgressingTask();
           },
-          child: ListView.separated(
-            itemCount: taskList.length,
-            itemBuilder: (context, index) {
-              return BodyTaskCardSection(
-                taskModel: taskList[index],
-                deleteId: () {
-                  taskList.removeAt(index);
-                },
-              );
-            },
-            separatorBuilder: (context, index) {
-              return const SizedBox(
-                height: 8,
-              );
-            },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: ListView.separated(
+              itemCount: taskList.length,
+              itemBuilder: (context, index) {
+                return BodyTaskCardSection(
+                  taskModel: taskList[index],
+                  onRefreshList: getProgressingTask,
+                );
+              },
+              separatorBuilder: (context, index) {
+                return const SizedBox(
+                  height: 8,
+                );
+              },
+            ),
           ),
         ),
       ),

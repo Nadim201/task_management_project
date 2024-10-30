@@ -11,25 +11,35 @@ class BodyTaskCardSection extends StatefulWidget {
   const BodyTaskCardSection({
     super.key,
     required this.taskModel,
-    required this.deleteId,
+    required this.onRefreshList,
   });
 
   final TaskModel taskModel;
-  final VoidCallback deleteId;
+  final VoidCallback onRefreshList;
 
   @override
   State<BodyTaskCardSection> createState() => _BodyTaskCardSectionState();
 }
 
 class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
-  bool isLoading = false;
+  String selectedStatus = '';
+  bool deleteRefreshTask = false;
+  bool updateRefreshTask = false;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedStatus = widget.taskModel.status!;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+      ),
       child: Card(
-        elevation: 0,
+        elevation: 1,
         color: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -62,25 +72,43 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Chip(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     side: BorderSide.none,
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     backgroundColor: AppColor.themeColor,
                     labelStyle: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w500),
+                        fontSize: 15,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500),
                     label: Text(widget.taskModel.status.toString()),
                   ),
                   Row(
                     children: [
-                      IconButton(
-                        onPressed: () => onTabEdit(context),
-                        icon: const Icon(Icons.edit),
+                      Visibility(
+                        visible: !updateRefreshTask,
+                        replacement:
+                            const Center(child: CircularProgressIndicator()),
+                        child: IconButton(
+                          onPressed: () => onTabEdit(context),
+                          icon: const Icon(
+                            Icons.edit_note,
+                            color: AppColor.themeColor,
+                          ),
+                        ),
                       ),
-                      IconButton(
-                        onPressed: () async {
-                          await onTabDelete();
-                        },
-                        icon: const Icon(Icons.delete),
+                      Visibility(
+                        visible: !deleteRefreshTask,
+                        replacement:
+                            const Center(child: CircularProgressIndicator()),
+                        child: IconButton(
+                          onPressed: deleteTask,
+                          icon: const Icon(
+                            Icons.delete_sweep_outlined,
+                            color: Colors.red,
+                          ),
+                        ),
                       )
                     ],
                   ),
@@ -109,10 +137,13 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
             ].map((status) {
               return ListTile(
                 onTap: () {
+                  updateTask(status);
                   Navigator.pop(context);
-                  updateTaskStatus(widget.taskModel.sId.toString(), status);
                 },
                 title: Text(status),
+                selected: selectedStatus == status,
+                trailing:
+                    selectedStatus == status ? const Icon(Icons.check) : null,
               );
             }).toList(),
           ),
@@ -129,47 +160,38 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
     );
   }
 
-  Future<void> onTabDelete() async {
-    await deleteTask(widget.taskModel.sId.toString());
-    widget.deleteId();
-  }
-
-  Future<void> deleteTask(String id) async {
-    isLoading = true;
+  Future<void> deleteTask() async {
+    deleteRefreshTask = true;
     setState(() {});
 
-    final NetworkResponse response =
-        await NetworkCaller().getRequest(Utils.deleteTask + id);
-
-    isLoading = false;
-    setState(() {});
+    final NetworkResponse response = await NetworkCaller().getRequest(
+      Utils.deleteTask(widget.taskModel.sId!),
+    );
 
     if (response.isSuccess) {
+      widget.onRefreshList();
       showSnackBarMessage(context, 'Item deleted');
     } else {
+      deleteRefreshTask = false;
+      setState(() {});
       showSnackBarMessage(context, response.errorMessage, true);
     }
   }
 
-  Future<void> updateTaskStatus(String taskId, String newStatus) async {
-    setState(() {
-      isLoading = true;
-    });
+  Future<void> updateTask(String status) async {
+    updateRefreshTask = true;
+    setState(() {});
 
-    final String url = '${Utils.updateTask}/$taskId/$newStatus';
-
-    final NetworkResponse response = await NetworkCaller().getRequest(url);
-
-    setState(() {
-      isLoading = false;
-    });
+    final NetworkResponse response = await NetworkCaller().getRequest(
+      Utils.updateTask(widget.taskModel.sId!, status),
+    );
 
     if (response.isSuccess) {
-      showSnackBarMessage(context, 'Task status updated to $newStatus');
-      setState(() {
-        widget.taskModel.status = newStatus;
-      });
+      widget.onRefreshList();
+      showSnackBarMessage(context, 'Item Updated');
     } else {
+      deleteRefreshTask = false;
+      setState(() {});
       showSnackBarMessage(context, response.errorMessage, true);
     }
   }

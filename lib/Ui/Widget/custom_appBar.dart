@@ -25,6 +25,10 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
         title: const Row(
           children: [
             CircleAvatar(
+              child: Icon(
+                Icons.manage_accounts_rounded,
+                size: 40,
+              ),
               radius: 20,
             ),
             SizedBox(
@@ -43,8 +47,8 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
                 Text(
                   'flutterrun1@gmail.com',
                   style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
                       color: Colors.white),
                 ),
               ],

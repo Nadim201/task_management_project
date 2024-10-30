@@ -6,12 +6,15 @@ class Utils {
   static const String pin = '$baseUrl/RecoverVerifyOtp/';
   static const String reset = '$baseUrl/RecoverResetPassword';
   static const String addTask = '$baseUrl/createTask';
-  static const String deleteTask = '$baseUrl/deleteTask/';
-  static const String updateTask = '$baseUrl/updateTaskStatus/';
   static const String newTaskList = '$baseUrl/listTaskByStatus/New';
-  static const String completedTaskList = '$baseUrl/listTaskByStatus/Completed';
+  static const String completedTaskList = '$baseUrl/listTaskByStatus/Complete';
   static const String cancelTaskList = '$baseUrl/listTaskByStatus/Cancel';
+  static const String taskStatusCount = '$baseUrl/taskStatusCount';
   static const String progressingTaskList =
       '$baseUrl/listTaskByStatus/Progressing';
+
+  static String deleteTask(String id) => '$baseUrl/deleteTask/$id';
+
+  static String updateTask(String id, String status) =>
+      '$baseUrl/updateTaskStatus/$id/$status';
 }
-//

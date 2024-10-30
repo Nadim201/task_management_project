@@ -33,21 +33,22 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
         replacement: const Center(child: CircularProgressIndicator()),
         child: RefreshIndicator(
           onRefresh: () async {},
-          child: ListView.separated(
-            itemCount: taskList.length,
-            itemBuilder: (context, index) {
-              return BodyTaskCardSection(
-                taskModel: taskList[index],
-                deleteId: () {
-                  taskList.removeAt(index);
-                },
-              );
-            },
-            separatorBuilder: (context, index) {
-              return const SizedBox(
-                height: 8,
-              );
-            },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: ListView.separated(
+              itemCount: taskList.length,
+              itemBuilder: (context, index) {
+                return BodyTaskCardSection(
+                  taskModel: taskList[index],
+                  onRefreshList: getNewTaskScreen,
+                );
+              },
+              separatorBuilder: (context, index) {
+                return const SizedBox(
+                  height: 8,
+                );
+              },
+            ),
           ),
         ),
       ),
