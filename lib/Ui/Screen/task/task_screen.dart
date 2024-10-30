@@ -49,9 +49,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
           child: Column(
             children: [
               buildSummarySection(),
-              const SizedBox(
-                height: 8,
-              ),
               Expanded(
                 child: Visibility(
                   visible: !isLoading,
@@ -89,23 +86,41 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 
   Padding buildSummarySection() {
     return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Visibility(
-        child: SizedBox(
-          height: 100,
-          child: ListView.builder(
-            itemCount: _statusTaskCounterList.length,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              final StatusModel task = _statusTaskCounterList[index];
-              return TaskSummaryCard(title: task.sId!, counter: task.sum ?? 0);
-            },
-          ),
+      padding: const EdgeInsets.all(8.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: _statusTaskCounterList
+              .map((task) => TaskSummaryCard(
+                    title: task.sId!,
+                    counter: task.sum ?? 0,
+                  ))
+              .toList(),
         ),
       ),
     );
   }
 
+  //Using ListViewBuilder
+  // Padding buildSummarySection() {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(8),
+  //     child: Visibility(
+  //       child: SizedBox(
+  //         height: 100,
+  //         child: ListView.builder(
+  //           itemCount: _statusTaskCounterList.length,
+  //           scrollDirection: Axis.horizontal,
+  //           itemBuilder: (context, index) {
+  //             final StatusModel task = _statusTaskCounterList[index];
+  //             return TaskSummaryCard(title: task.sId!, counter: task.sum ?? 0);
+  //           },
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+  //Using For in loop
   // Padding buildSummarySection() {
   //   return Padding(
   //     padding: const EdgeInsets.all(8.0),
