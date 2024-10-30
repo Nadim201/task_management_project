@@ -87,9 +87,12 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   Padding buildSummarySection() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
+      child: Visibility(
+        visible: !TaskCounterListProgressing,
+        replacement: const Center(child: CircularProgressIndicator()),
+        child: Wrap(
+          spacing: 30.0, // Optional: adds space between items
+          runSpacing: 8.0,
           children: _statusTaskCounterList
               .map((task) => TaskSummaryCard(
                     title: task.sId!,
