@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_project/data/services/networkCaller.dart';
-
 import '../../data/common/utils.dart';
 import '../../data/model/network_response.dart';
 import '../../data/model/task_model.dart';
 import '../Utils/color.dart';
 import 'Show_Snack_bar.dart';
+import 'package:readmore/readmore.dart';
 
 class BodyTaskCardSection extends StatefulWidget {
   const BodyTaskCardSection({
@@ -54,13 +54,29 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
-              Text(
-                ' ${widget.taskModel.description}',
-                style: const TextStyle(
+              ReadMoreText(
+                '${widget.taskModel.description},',
+                trimMode: TrimMode.Line,
+                trimLines: 2,
+                colorClickableText: Colors.pink,
+                trimCollapsedText: 'Show more',
+                trimExpandedText: 'Show less',
+                lessStyle:  TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.indigoAccent.shade100),
+                moreStyle: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: Colors.grey),
               ),
+              // Text(
+              //   ' ${widget.taskModel.description}',
+              //   style: const TextStyle(
+              //       fontSize: 14,
+              //       fontWeight: FontWeight.w400,
+              //       color: Colors.grey),
+              // ),
               const SizedBox(height: 8),
               Text(
                 ' ${widget.taskModel.createdDate}',
@@ -135,15 +151,22 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
               'Cancel',
               'Progressing',
             ].map((status) {
-              return ListTile(
-                onTap: () {
-                  updateTask(status);
-                  Navigator.pop(context);
-                },
-                title: Text(status),
-                selected: selectedStatus == status,
-                trailing:
-                    selectedStatus == status ? const Icon(Icons.check) : null,
+              return Card(
+                elevation: 0,
+                child: ListTile(
+                  onTap: () {
+                    updateTask(status);
+                    Navigator.pop(context);
+                  },
+                  title: Text(status),
+                  selected: selectedStatus == status,
+                  trailing: selectedStatus == status
+                      ? Icon(
+                          Icons.check_box,
+                          color: AppColor.themeColor,
+                        )
+                      : null,
+                ),
               );
             }).toList(),
           ),
