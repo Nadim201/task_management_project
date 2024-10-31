@@ -23,7 +23,7 @@ class NewTaskScreen extends StatefulWidget {
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
   bool isLoading = false;
-  bool TaskCounterListProgressing = false;
+  bool taskCounterStatusProgressing = false;
   List<TaskModel> taskList = [];
   List<StatusModel> _statusTaskCounterList = [];
 
@@ -88,17 +88,16 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Visibility(
-        visible: !TaskCounterListProgressing,
-        replacement: const Center(child: CircularProgressIndicator()),
-        child: Wrap(
-          spacing: 30.0, // Optional: adds space between items
-          runSpacing: 8.0,
-          children: _statusTaskCounterList
-              .map((task) => TaskSummaryCard(
-                    title: task.sId!,
-                    counter: task.sum ?? 0,
-                  ))
-              .toList(),
+        visible: !taskCounterStatusProgressing,
+        replacement:
+            const Center(child: Center(child: CircularProgressIndicator())),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+              children: _statusTaskCounterList
+                  .map((task) =>
+                      TaskSummaryCard(title: task.sId!, counter: task.sum ?? 0))
+                  .toList()),
         ),
       ),
     );
@@ -179,7 +178,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   }
 
   Future<void> getStatusCounter() async {
-    TaskCounterListProgressing = true;
+    taskCounterStatusProgressing = true;
     setState(() {});
     _statusTaskCounterList.clear();
     final NetworkResponse response = await NetworkCaller()
@@ -192,7 +191,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     } else {
       showSnackBarMessage(context, response.errorMessage, true);
     }
-    TaskCounterListProgressing = false;
+    taskCounterStatusProgressing = false;
     setState(() {});
   }
 }

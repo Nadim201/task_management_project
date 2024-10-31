@@ -16,7 +16,7 @@ class TaskSummaryCard extends StatelessWidget {
       elevation: 1,
       color: Colors.white,
       child: SizedBox(
-        width: 170,
+        width: 120,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -24,11 +24,11 @@ class TaskSummaryCard extends StatelessWidget {
             children: [
               Text(
                 '$counter',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
               ),
               SizedBox(height: 2,),
               Text(
-                title,style: TextStyle(color: Colors.grey,fontSize: 16)
+                title,style: TextStyle(color: Colors.grey,fontSize: 14)
               )
             ],
           ),
