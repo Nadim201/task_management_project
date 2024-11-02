@@ -9,6 +9,7 @@ class Utils {
   static const String newTaskList = '$baseUrl/listTaskByStatus/New';
   static const String completedTaskList = '$baseUrl/listTaskByStatus/Complete';
   static const String cancelTaskList = '$baseUrl/listTaskByStatus/Cancel';
+  static const String updateProfile = '$baseUrl/ProfileUpdate';
   static const String taskStatusCount = '$baseUrl/taskStatusCount';
   static const String progressingTaskList =
       '$baseUrl/listTaskByStatus/Progressing';

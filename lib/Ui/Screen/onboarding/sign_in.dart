@@ -6,7 +6,9 @@ import 'package:task_management_project/Ui/Utils/color.dart';
 import 'package:task_management_project/Ui/Widget/Show_Snack_bar.dart';
 import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 import 'package:task_management_project/data/common/utils.dart';
+import 'package:task_management_project/data/model/login_model.dart';
 import 'package:task_management_project/data/model/network_response.dart';
+import 'package:task_management_project/data/model/user_data.dart';
 import 'package:task_management_project/data/services/networkCaller.dart';
 
 import '../../../data/controller/auth_controller.dart';
@@ -60,7 +62,7 @@ class _SignInState extends State<SignInScreen> {
                             child: const Text(
                               'Forgot password?',
                               style:
-                              TextStyle(color: Colors.grey, fontSize: 14),
+                                  TextStyle(color: Colors.grey, fontSize: 14),
                             ),
                           ),
                           buildSignUpSection(),
@@ -154,8 +156,7 @@ class _SignInState extends State<SignInScreen> {
           TextSpan(
               text: "Sign up?",
               style: const TextStyle(color: AppColor.themeColor, fontSize: 14),
-              recognizer: TapGestureRecognizer()
-                ..onTap = _onTapSignUp),
+              recognizer: TapGestureRecognizer()..onTap = _onTapSignUp),
           // Pass context to the method
         ],
       ),
@@ -176,17 +177,19 @@ class _SignInState extends State<SignInScreen> {
       "password": _passwordTEController.text
     };
     NetworkResponse response =
-    await NetworkCaller().postRequest(url: Utils.login, body: requestBody);
+        await NetworkCaller().postRequest(url: Utils.login, body: requestBody);
     _inProgress = false;
     setState(() {});
     if (response.isSuccess) {
-      await AuthController.saveAccessToken(response.responseData['token']);
+      LoginModel loginModel = LoginModel.fromJson(response.responseData);
+      await AuthController.saveAccessToken(loginModel.token!);
+      await AuthController.saveUserData(loginModel.data!);
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (builder) => const MainBottomNavBar(),
           ),
-              (predicate) => false);
+          (predicate) => false);
     } else {
       showSnackBarMessage(context, response.errorMessage, true);
     }

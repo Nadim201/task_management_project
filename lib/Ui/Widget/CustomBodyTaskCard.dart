@@ -6,6 +6,7 @@ import '../../data/model/task_model.dart';
 import '../Utils/color.dart';
 import 'Show_Snack_bar.dart';
 import 'package:readmore/readmore.dart';
+import 'package:intl/intl.dart';
 
 class BodyTaskCardSection extends StatefulWidget {
   const BodyTaskCardSection({
@@ -50,7 +51,7 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                ' ${widget.taskModel.title}',
+                '${widget.taskModel.title}',
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
@@ -61,7 +62,7 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
                 colorClickableText: Colors.pink,
                 trimCollapsedText: 'Show more',
                 trimExpandedText: 'Show less',
-                lessStyle:  TextStyle(
+                lessStyle: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: Colors.indigoAccent.shade100),
@@ -79,10 +80,11 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
               // ),
               const SizedBox(height: 8),
               Text(
-                ' ${widget.taskModel.createdDate}',
+                DateFormat('MMM d, yyyy, hh:mm a').format(DateTime.tryParse(widget.taskModel.createdDate ?? '') ?? DateTime.now()),
                 style:
-                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
+
               const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

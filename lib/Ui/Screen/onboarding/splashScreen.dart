@@ -24,9 +24,11 @@ class _SplashscreenState extends State<Splashscreen> {
   }
 
   Future<void> _moveToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 6));
+    await Future.delayed(const Duration(seconds: 4));
     await AuthController.getAccessToken();
+
     if (await AuthController.isSignedIn()) {
+      await AuthController.getUserData();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

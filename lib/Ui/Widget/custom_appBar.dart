@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_project/Ui/Screen/profile/profileScreen.dart';
+import 'package:task_management_project/data/model/user_data.dart';
 
+import '../../data/controller/auth_controller.dart';
 import '../Screen/onboarding/sign_in.dart';
 import '../Utils/color.dart';
 
@@ -22,31 +24,31 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
       child: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: AppColor.themeColor,
-        title: const Row(
+        title: Row(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
+              radius: 20,
               child: Icon(
                 Icons.manage_accounts_rounded,
                 size: 40,
               ),
-              radius: 20,
             ),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Nadim Mahmud',
-                  style: TextStyle(
+                  AuthController.userData?.fullName() ?? '',
+                  style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                       color: Colors.white),
                 ),
                 Text(
-                  'flutterrun1@gmail.com',
-                  style: TextStyle(
+                  AuthController.userData?.email ?? '',
+                  style: const TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 14,
                       color: Colors.white),
