@@ -1,57 +1,97 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:task_management_project/Ui/Screen/profile/profileScreen.dart';
-import 'package:task_management_project/data/model/user_data.dart';
 
 import '../../data/controller/auth_controller.dart';
 import '../Screen/onboarding/sign_in.dart';
 import '../Utils/color.dart';
 
-class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppbar extends StatefulWidget implements PreferredSizeWidget {
+  final bool isProfile;
+
   const CustomAppbar({super.key, this.isProfile = false});
 
-  final bool isProfile;
+  @override
+  State<CustomAppbar> createState() => _CustomAppbarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _CustomAppbarState extends State<CustomAppbar> {
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  String? fullName;
+  String? email;
+  String? photo;
+
+  void _loadUserData() {
+    setState(() {
+      fullName = AuthController.userData?.fullName;
+      email = AuthController.userData?.email;
+      photo = AuthController.userData?.photo;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (isProfile) {
+        if (widget.isProfile) {
           return;
         }
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const ProfileScreen()));
+        Navigator.push(
+          context, // in this section what to do i do not understand
+          MaterialPageRoute(builder: (context) => const ProfileScreen()),
+        ).then((_) => _loadUserData());
       },
       child: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: AppColor.themeColor,
         title: Row(
           children: [
-            const CircleAvatar(
-              radius: 20,
-              child: Icon(
-                Icons.manage_accounts_rounded,
-                size: 40,
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white),
+                shape: BoxShape.circle,
+                color: Colors.grey[300],
+              ),
+              child: CircleAvatar(
+                backgroundImage: AuthController.userData?.photo != null
+                    ? MemoryImage(
+                        base64Decode(
+                          AuthController.userData!.photo!,
+                        ),
+                      )
+                    : const AssetImage('assets/images/pexels-photo-771742.jpg'),
               ),
             ),
-            const SizedBox(
-              width: 8,
-            ),
+            const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AuthController.userData?.fullName() ?? '',
+                  AuthController.userData?.fullName! ?? '',
                   style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.white),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
                 ),
                 Text(
                   AuthController.userData?.email ?? '',
                   style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                      color: Colors.white),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
@@ -61,20 +101,15 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
           IconButton(
             onPressed: () {
               Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (builder) => const SignInScreen()),
-                  (predicate) => false);
+                context,
+                MaterialPageRoute(builder: (builder) => const SignInScreen()),
+                (predicate) => false,
+              );
             },
-            icon: const Icon(
-              Icons.logout_outlined,
-              color: Colors.white,
-            ),
-          )
+            icon: const Icon(Icons.logout_outlined, color: Colors.white),
+          ),
         ],
       ),
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

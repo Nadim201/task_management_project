@@ -25,7 +25,7 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppbar(),
+      appBar:  CustomAppbar(),
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
         onDestinationSelected: (int index) {
