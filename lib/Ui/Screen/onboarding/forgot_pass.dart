@@ -12,6 +12,7 @@ import 'forgot_pass_otp.dart';
 
 class ForgotPass extends StatefulWidget {
   const ForgotPass({super.key});
+  static const String name='/forgotPassScreen';
 
   @override
   State<ForgotPass> createState() => _ForgotPassState();

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:task_management_project/Ui/Widget/Show_Snack_bar.dart';
+import 'package:get/get.dart';
+
 import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 import 'package:task_management_project/Ui/Widget/custom_appBar.dart';
-import 'package:task_management_project/data/common/utils.dart';
-import 'package:task_management_project/data/model/network_response.dart';
-import 'package:task_management_project/data/services/networkCaller.dart';
+
+import 'package:task_management_project/data/controller/addTask_controller.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
+
+  static String name = '/addTaskScreen';
 
   @override
   State<AddTaskScreen> createState() => _AddTaskScreenState();
@@ -17,7 +19,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   final TextEditingController _subTEController = TextEditingController();
   final TextEditingController _desTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool isLoading = false;
   bool refreshPreviewPage = false;
 
   @override
@@ -97,33 +98,32 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   Future<void> _onTabSubmit() async {
     if (_formKey.currentState!.validate()) {
-      _addTask();
+      addTask();
     }
   }
 
-  Future<void> _addTask() async {
-    isLoading = true;
-    setState(() {});
-    Map<String, dynamic> bodyRequest = {
-      "title": _subTEController.text.trim(),
-      "description": _desTEController.text.trim(),
-      "status": "New"
-    };
-
-    final NetworkResponse response = await NetworkCaller().postRequest(
-      url: Utils.addTask,
-      body: bodyRequest,
-    );
-    isLoading = false;
-    setState(() {});
-
-    if (response.isSuccess) {
+  Future<void> addTask() async {
+    var addTaskScreenController = AddTaskScreenController();
+    final bool result = await addTaskScreenController.addTaskNow(
+        _subTEController.text, _desTEController.text, "New");
+    if (result) {
       refreshPreviewPage = true;
       _clearTextFiled();
-      setState(() {});
-      showSnackBarMessage(context, 'Task Added');
+      Get.snackbar(
+        'Task Added Successfully',
+        '',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.indigoAccent,
+        colorText: Colors.white,
+      );
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      Get.snackbar(
+        'Task Add Failed',
+        AddTaskScreenController.errorMessage ?? 'An unexpected error occurred.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 

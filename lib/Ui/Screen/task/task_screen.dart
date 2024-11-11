@@ -1,18 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_management_project/Ui/Screen/task/add_task_screen.dart';
 import 'package:task_management_project/Ui/Utils/color.dart';
 import 'package:task_management_project/Ui/Widget/CustomBodyTaskCard.dart';
 import 'package:task_management_project/Ui/Widget/task_summary_card.dart';
-import 'package:task_management_project/data/model/task_List_model.dart';
 
-import '../../../data/common/utils.dart';
-import '../../../data/model/network_response.dart';
-import '../../../data/model/task_counter_list_model.dart';
+import '../../../data/controller/task_screen_controller.dart';
 import '../../../data/model/task_counter_model.dart';
-import '../../../data/model/task_model.dart';
-import '../../../data/services/networkCaller.dart';
-import '../../Widget/Show_Snack_bar.dart';
 
 class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({super.key});
@@ -22,19 +16,16 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
-  bool isLoading = false;
-  bool taskCounterStatusProgressing = false;
-  List<TaskModel> taskList = [];
-  List<StatusModel> _statusTaskCounterList = [];
-
-  late final TaskModel taskModel;
   late final StatusModel statusModel;
+  TaskScreenController taskScreenController = Get.find<TaskScreenController>();
 
   @override
   void initState() {
     super.initState();
-    getNewTaskScreen();
-    getStatusCounter();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getNewTaskScreen();
+      getStatusCounter();
+    });
   }
 
   @override
@@ -50,24 +41,27 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
             children: [
               buildSummarySection(),
               Expanded(
-                child: Visibility(
-                  visible: !isLoading,
-                  replacement: const Center(child: CircularProgressIndicator()),
-                  child: ListView.separated(
-                    itemCount: taskList.length,
-                    itemBuilder: (context, index) {
-                      return BodyTaskCardSection(
-                        taskModel: taskList[index],
-                        onRefreshList: getNewTaskScreen,
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return const SizedBox(
-                        height: 8,
-                      );
-                    },
-                  ),
-                ),
+                child: GetBuilder<TaskScreenController>(builder: (controller) {
+                  return Visibility(
+                    visible: !controller.inProgress,
+                    replacement:
+                        const Center(child: CircularProgressIndicator()),
+                    child: ListView.separated(
+                      itemCount: controller.taskList.length,
+                      itemBuilder: (context, index) {
+                        return BodyTaskCardSection(
+                          taskModel: controller.taskList[index],
+                          onRefreshList: getNewTaskScreen,
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const SizedBox(
+                          height: 8,
+                        );
+                      },
+                    ),
+                  );
+                }),
               ),
             ],
           ),
@@ -87,19 +81,21 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   Padding buildSummarySection() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Visibility(
-        visible: !taskCounterStatusProgressing,
-        replacement:
-            const Center(child: Center(child: CircularProgressIndicator())),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-              children: _statusTaskCounterList
-                  .map((task) =>
-                      TaskSummaryCard(title: task.sId!, counter: task.sum ?? 0))
-                  .toList()),
-        ),
-      ),
+      child: GetBuilder<TaskScreenController>(builder: (controller) {
+        return Visibility(
+          visible: !controller.inProgress,
+          replacement:
+              const Center(child: Center(child: CircularProgressIndicator())),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+                children: controller.taskCounterList
+                    .map((task) => TaskSummaryCard(
+                        title: task.sId!, counter: task.sum ?? 0))
+                    .toList()),
+          ),
+        );
+      }),
     );
   }
 
@@ -149,49 +145,38 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   // }
 
   Future<void> _onTabAddTask() async {
-    final bool shouldRefresh = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (builder) => const AddTaskScreen()),
+    final bool shouldRefresh = await Get.toNamed(
+      AddTaskScreen.name,
     );
     if (shouldRefresh == true) {
-      getNewTaskScreen();
-      getStatusCounter();
+      await getNewTaskScreen();
+      await getStatusCounter();
     }
   }
 
   Future<void> getNewTaskScreen() async {
-    isLoading = true;
-    setState(() {});
-    taskList.clear();
-    final NetworkResponse response =
-        await NetworkCaller().getRequest(Utils.newTaskList);
-
-    if (response.isSuccess) {
-      final TaskListModel taskListModel =
-          TaskListModel.fromJson(response.responseData);
-      taskList = taskListModel.taskList ?? [];
-    } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+    final bool result = await taskScreenController.getNewTaskScreen();
+    if (result == false) {
+      Get.snackbar(
+        'TaskList In Error',
+        TaskScreenController.errorMessage ?? 'An unexpected error occurred.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
-    isLoading = false;
-    setState(() {});
   }
 
   Future<void> getStatusCounter() async {
-    taskCounterStatusProgressing = true;
-    setState(() {});
-    _statusTaskCounterList.clear();
-    final NetworkResponse response = await NetworkCaller()
-        .getRequest(Utils.taskStatusCount); // Use a different API if needed
-
-    if (response.isSuccess) {
-      final TaskStatusCountModel taskStatusCountModel =
-          TaskStatusCountModel.fromJson(response.responseData);
-      _statusTaskCounterList = taskStatusCountModel.taskStatusCountList ?? [];
-    } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+    final bool result = await taskScreenController.getStatusCounter();
+    if (result == false) {
+      Get.snackbar(
+        'TaskCounterList In Error',
+        TaskScreenController.errorMessage ?? 'An unexpected error occurred.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
-    taskCounterStatusProgressing = false;
-    setState(() {});
   }
 }

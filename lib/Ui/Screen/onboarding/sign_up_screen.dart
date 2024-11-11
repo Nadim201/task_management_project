@@ -11,7 +11,7 @@ import '../../Widget/backgroundImage.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
-
+static const String name='signUpScreen';
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }

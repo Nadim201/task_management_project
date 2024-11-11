@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:task_management_project/Ui/Widget/Show_Snack_bar.dart';
-import 'package:task_management_project/data/common/utils.dart';
-import 'package:task_management_project/data/model/network_response.dart';
-import 'package:task_management_project/data/model/task_List_model.dart';
-import 'package:task_management_project/data/services/networkCaller.dart';
+import 'package:get/get.dart';
+import 'package:task_management_project/data/controller/cancel_task_screen_controller.dart';
 
 import '../../../data/model/task_model.dart';
 import '../../Widget/CustomBodyTaskCard.dart';
@@ -17,8 +13,8 @@ class CancelTaskScreen extends StatefulWidget {
 }
 
 class _CancelTaskScreenState extends State<CancelTaskScreen> {
-  bool isLoading = false;
-  List<TaskModel> taskList = [];
+  final CancelTaskController cancelTaskController =
+      Get.find<CancelTaskController>();
 
   @override
   void initState() {
@@ -29,52 +25,45 @@ class _CancelTaskScreenState extends State<CancelTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Visibility(
-        visible: !isLoading,
-        replacement: const Center(child: CircularProgressIndicator()),
-        child: RefreshIndicator(
-          onRefresh: () async {
-            getCancelTask();
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: ListView.separated(
-              itemCount: taskList.length,
-              itemBuilder: (context, index) {
-                return BodyTaskCardSection(
-                  taskModel: taskList[index],
-                  onRefreshList: getCancelTask,
-                );
-              },
-              separatorBuilder: (context, index) {
-                return const SizedBox(
-                  height: 8,
-                );
-              },
+      body: GetBuilder<CancelTaskController>(builder: (controller) {
+        return Visibility(
+          visible: !controller.inProgress,
+          replacement: const Center(child: CircularProgressIndicator()),
+          child: RefreshIndicator(
+            onRefresh: () async {
+              getCancelTask();
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: ListView.separated(
+                itemCount: controller.taskList.length,
+                itemBuilder: (context, index) {
+                  return BodyTaskCardSection(
+                    taskModel: controller.taskList[index],
+                    onRefreshList: getCancelTask,
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return const SizedBox(
+                    height: 8,
+                  );
+                },
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
   Future<void> getCancelTask() async {
-    isLoading = true;
-    setState(() {});
-    taskList.clear();
-    final NetworkResponse response =
-        await NetworkCaller().getRequest(Utils.cancelTaskList);
-
-    if (response.isSuccess) {
-      final TaskListModel taskListModel =
-          TaskListModel.fromJson(response.responseData);
-
-      taskList = taskListModel.taskList ?? [];
-
-      isLoading = false;
-      setState(() {});
-    } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+    bool result = await cancelTaskController.getCancelTaskScreen();
+    if (result == false) {
+      Get.snackbar('Something went wrong',
+          CancelTaskController.errorMessage ?? 'An unexpected error occurred.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.indigoAccent,
+          colorText: Colors.white);
     }
   }
 }

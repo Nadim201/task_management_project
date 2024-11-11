@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../../../data/common/utils.dart';
-import '../../../data/model/network_response.dart';
-import '../../../data/model/task_List_model.dart';
-import '../../../data/model/task_model.dart';
-import '../../../data/services/networkCaller.dart';
+import 'package:get/get.dart';
+import '../../../data/controller/compeleted_task_controller.dart';
 import '../../Widget/CustomBodyTaskCard.dart';
-import '../../Widget/Show_Snack_bar.dart';
 
 class CompletedTaskScreen extends StatefulWidget {
   const CompletedTaskScreen({super.key});
@@ -16,8 +11,8 @@ class CompletedTaskScreen extends StatefulWidget {
 }
 
 class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
-  bool isLoading = false;
-  List<TaskModel> taskList = [];
+  final CompletedTaskController completedTaskController =
+      Get.find<CompletedTaskController>();
 
   @override
   void initState() {
@@ -28,49 +23,45 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Visibility(
-        visible: !isLoading,
-        replacement: const Center(child: CircularProgressIndicator()),
-        child: RefreshIndicator(
-          onRefresh: () async {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: ListView.separated(
-              itemCount: taskList.length,
-              itemBuilder: (context, index) {
-                return BodyTaskCardSection(
-                  taskModel: taskList[index],
-                  onRefreshList: getNewTaskScreen,
-                );
-              },
-              separatorBuilder: (context, index) {
-                return const SizedBox(
-                  height: 8,
-                );
-              },
+      body: GetBuilder<CompletedTaskController>(builder: (controller) {
+        return Visibility(
+          visible: !controller.inProgress,
+          replacement: const Center(child: CircularProgressIndicator()),
+          child: RefreshIndicator(
+            onRefresh: () async {},
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: ListView.separated(
+                itemCount: controller.taskList.length,
+                itemBuilder: (context, index) {
+                  return BodyTaskCardSection(
+                    taskModel: controller.taskList[index],
+                    onRefreshList: getNewTaskScreen,
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return const SizedBox(
+                    height: 8,
+                  );
+                },
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
   Future<void> getNewTaskScreen() async {
-    isLoading = true;
-    setState(() {});
-    taskList.clear();
-    final NetworkResponse response =
-        await NetworkCaller().getRequest(Utils.completedTaskList);
-
-    if (response.isSuccess) {
-      final TaskListModel taskListModel =
-          TaskListModel.fromJson(response.responseData);
-
-      taskList = taskListModel.taskList ?? [];
-      isLoading = false;
-      setState(() {});
-    } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+    bool result = await completedTaskController.getCompletedTaskScreen();
+    if (result == false) {
+      Get.snackbar(
+          'Something went wrong',
+          CompletedTaskController.errorMessage ??
+              'An unexpected error occurred.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.indigoAccent,
+          colorText: Colors.white);
     }
   }
 }

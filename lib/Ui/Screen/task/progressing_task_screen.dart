@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:task_management_project/Ui/Widget/Show_Snack_bar.dart';
-import 'package:task_management_project/data/common/utils.dart';
-import 'package:task_management_project/data/model/network_response.dart';
-import 'package:task_management_project/data/model/task_List_model.dart';
-import 'package:task_management_project/data/model/task_model.dart';
-import 'package:task_management_project/data/services/networkCaller.dart';
+import 'package:get/get.dart';
+import 'package:task_management_project/data/controller/ProgressingTaskController.dart';
 
 import '../../Widget/CustomBodyTaskCard.dart';
 
@@ -16,8 +12,8 @@ class ProgressingTaskScreen extends StatefulWidget {
 }
 
 class _ProgressingTaskScreenState extends State<ProgressingTaskScreen> {
-  bool isLoading = false;
-  List<TaskModel> taskList = [];
+  final ProgressingTaskController progressingTaskController =
+      Get.find<ProgressingTaskController>();
 
   @override
   void initState() {
@@ -28,50 +24,47 @@ class _ProgressingTaskScreenState extends State<ProgressingTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Visibility(
-        visible: !isLoading,
-        replacement: const Center(child: CircularProgressIndicator()),
-        child: RefreshIndicator(
-          onRefresh: () async {
-            getProgressingTask();
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: ListView.separated(
-              itemCount: taskList.length,
-              itemBuilder: (context, index) {
-                return BodyTaskCardSection(
-                  taskModel: taskList[index],
-                  onRefreshList: getProgressingTask,
-                );
-              },
-              separatorBuilder: (context, index) {
-                return const SizedBox(
-                  height: 8,
-                );
-              },
+      body: GetBuilder<ProgressingTaskController>(builder: (controller) {
+        return Visibility(
+          visible: !controller.inProgress,
+          replacement: const Center(child: CircularProgressIndicator()),
+          child: RefreshIndicator(
+            onRefresh: () async {
+              getProgressingTask();
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: ListView.separated(
+                itemCount: controller.taskList.length,
+                itemBuilder: (context, index) {
+                  return BodyTaskCardSection(
+                    taskModel: controller.taskList[index],
+                    onRefreshList: getProgressingTask,
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return const SizedBox(
+                    height: 8,
+                  );
+                },
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
   Future<void> getProgressingTask() async {
-    isLoading = true;
-    setState(() {});
-    taskList.clear();
-    final NetworkResponse response =
-        await NetworkCaller().getRequest(Utils.progressingTaskList);
-
-    if (response.isSuccess) {
-      final TaskListModel taskListModel =
-          TaskListModel.fromJson(response.responseData);
-      taskList = taskListModel.taskList ?? [];
-      isLoading = false;
-      setState(() {});
-    } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+    bool result = await progressingTaskController.getProgressingTaskScreen();
+    if (result == false) {
+      Get.snackbar(
+          'Something went wrong',
+          ProgressingTaskController.errorMessage ??
+              'An unexpected error occurred.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.indigoAccent,
+          colorText: Colors.white);
     }
   }
 }

@@ -1,28 +1,31 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/snackbar/snackbar.dart';
+
 import 'package:task_management_project/Ui/Screen/task/MainBottomNavBar.dart';
 import 'package:task_management_project/Ui/Screen/onboarding/sign_up_screen.dart';
 import 'package:task_management_project/Ui/Utils/color.dart';
-import 'package:task_management_project/Ui/Widget/Show_Snack_bar.dart';
-import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
-import 'package:task_management_project/data/common/utils.dart';
-import 'package:task_management_project/data/model/login_model.dart';
-import 'package:task_management_project/data/model/network_response.dart';
-import 'package:task_management_project/data/model/user_data.dart';
-import 'package:task_management_project/data/services/networkCaller.dart';
 
-import '../../../data/controller/auth_controller.dart';
+import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
+
+import 'package:task_management_project/data/controller/signIn_controller.dart';
+
 import 'forgot_pass.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
+
+  static const String name = '/singInScreen';
 
   @override
   State<SignInScreen> createState() => _SignInState();
 }
 
 class _SignInState extends State<SignInScreen> {
-  bool _inProgress = false;
+  final bool _inProgress = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
@@ -58,7 +61,7 @@ class _SignInState extends State<SignInScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           TextButton(
-                            onPressed: _onTapForgatePass,
+                            onPressed: _onTapForgetPass,
                             child: const Text(
                               'Forgot password?',
                               style:
@@ -131,13 +134,18 @@ class _SignInState extends State<SignInScreen> {
         const SizedBox(
           height: 30,
         ),
-        Visibility(
-          visible: !_inProgress,
-          replacement: const Center(child: CircularProgressIndicator()),
-          child: ElevatedButton(
-            onPressed: _OnTabNextButton,
-            child: const Icon(Icons.arrow_circle_right),
-          ),
+        GetBuilder<SignInController>(
+
+          builder: (controller) {
+            return Visibility(
+              visible: !controller.inProgress,
+              replacement: const Center(child: CircularProgressIndicator()),
+              child: ElevatedButton(
+                onPressed: _OnTabNextButton,
+                child: const Icon(Icons.arrow_circle_right),
+              ),
+            );
+          }
         ),
       ],
     );
@@ -170,46 +178,30 @@ class _SignInState extends State<SignInScreen> {
   }
 
   Future<void> _signIn() async {
-    _inProgress = true;
-    setState(() {});
-    Map<String, dynamic> requestBody = {
-      "email": _emailTEController.text.trim(),
-      "password": _passwordTEController.text
-    };
-    NetworkResponse response =
-        await NetworkCaller().postRequest(url: Utils.login, body: requestBody);
-    _inProgress = false;
-    setState(() {});
-    if (response.isSuccess) {
-      LoginModel loginModel = LoginModel.fromJson(response.responseData);
-      await AuthController.saveAccessToken(loginModel.token!);
-      await AuthController.saveUserData(loginModel.data!);
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (builder) => const MainBottomNavBar(),
-          ),
-          (predicate) => false);
+    final signInController = SignInController();
+    final bool result = await signInController.signIn(
+      _emailTEController.text.trim(),
+      _passwordTEController.text,
+    );
+
+    if (result) {
+      Get.offAllNamed(MainBottomNavBar.name);
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      Get.snackbar(
+        'Sign In Error',
+        SignInController.errorMessage ?? 'An unexpected error occurred.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
-  void _onTapForgatePass() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ForgotPass(),
-      ),
-    );
+  void _onTapForgetPass() {
+    Get.toNamed(ForgotPass.name);
   }
 
   void _onTapSignUp() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SignUpScreen(),
-      ),
-    );
+    Get.toNamed(SignUpScreen.name);
   }
 }

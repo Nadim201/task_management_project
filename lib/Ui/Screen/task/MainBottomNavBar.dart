@@ -8,7 +8,7 @@ import 'cancel_task_screen.dart';
 
 class MainBottomNavBar extends StatefulWidget {
   const MainBottomNavBar({super.key});
-
+static const String name='/mainBottomNavBar';
   @override
   State<MainBottomNavBar> createState() => _MainBottomNavBarState();
 }

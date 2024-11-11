@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:task_management_project/Ui/Screen/onboarding/sign_in.dart';
 import 'package:task_management_project/Ui/Utils/assets_path.dart';
@@ -11,6 +10,8 @@ import '../task/MainBottomNavBar.dart';
 
 class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
+
+  static const String name = '/SplashScreen';
 
   @override
   State<Splashscreen> createState() => _SplashscreenState();
