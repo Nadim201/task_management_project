@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:task_management_project/data/services/networkCaller.dart';
+import 'package:get/get.dart';
+import 'package:task_management_project/data/controller/TaskController/delete-task_controller.dart';
+import 'package:task_management_project/data/controller/TaskController/update_task_controller.dart';
+
 import '../../data/common/utils.dart';
-import '../../data/model/network_response.dart';
+
 import '../../data/model/task_model.dart';
 import '../Utils/color.dart';
-import 'Show_Snack_bar.dart';
+import '../Utils/Show_Snack_bar.dart';
 import 'package:readmore/readmore.dart';
 import 'package:intl/intl.dart';
 
@@ -23,9 +26,9 @@ class BodyTaskCardSection extends StatefulWidget {
 }
 
 class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
+  final deleteController = Get.find<DeleteTaskController>();
+  final updateTaskController = Get.find<UpdateTaskController>();
   String selectedStatus = '';
-  bool deleteRefreshTask = false;
-  bool updateRefreshTask = false;
 
   @override
   void initState() {
@@ -71,20 +74,14 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
                     fontWeight: FontWeight.w400,
                     color: Colors.grey),
               ),
-              // Text(
-              //   ' ${widget.taskModel.description}',
-              //   style: const TextStyle(
-              //       fontSize: 14,
-              //       fontWeight: FontWeight.w400,
-              //       color: Colors.grey),
-              // ),
               const SizedBox(height: 8),
               Text(
-                DateFormat('MMM d, yyyy, hh:mm a').format(DateTime.tryParse(widget.taskModel.createdDate ?? '') ?? DateTime.now()),
+                DateFormat('MMM d, yyyy, hh:mm a').format(
+                    DateTime.tryParse(widget.taskModel.createdDate ?? '') ??
+                        DateTime.now()),
                 style:
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
-
               const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -104,30 +101,34 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
                   ),
                   Row(
                     children: [
-                      Visibility(
-                        visible: !updateRefreshTask,
-                        replacement:
-                            const Center(child: CircularProgressIndicator()),
-                        child: IconButton(
-                          onPressed: () => onTabEdit(context),
-                          icon: const Icon(
-                            Icons.edit_note,
-                            color: AppColor.themeColor,
+                      GetBuilder<UpdateTaskController>(builder: (controller) {
+                        return Visibility(
+                          visible: !controller.inProgress,
+                          replacement:
+                              const Center(child: CircularProgressIndicator()),
+                          child: IconButton(
+                            onPressed: () => onTabEdit(context),
+                            icon: const Icon(
+                              Icons.edit_note,
+                              color: AppColor.themeColor,
+                            ),
                           ),
-                        ),
-                      ),
-                      Visibility(
-                        visible: !deleteRefreshTask,
-                        replacement:
-                            const Center(child: CircularProgressIndicator()),
-                        child: IconButton(
-                          onPressed: deleteTask,
-                          icon: const Icon(
-                            Icons.delete_sweep_outlined,
-                            color: Colors.red,
+                        );
+                      }),
+                      GetBuilder<DeleteTaskController>(builder: (controller) {
+                        return Visibility(
+                          visible: !controller.inProgress,
+                          replacement:
+                              const Center(child: CircularProgressIndicator()),
+                          child: IconButton(
+                            onPressed: deleteTask,
+                            icon: const Icon(
+                              Icons.delete_sweep_outlined,
+                              color: Colors.red,
+                            ),
                           ),
-                        ),
-                      )
+                        );
+                      })
                     ],
                   ),
                 ],
@@ -186,38 +187,26 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
   }
 
   Future<void> deleteTask() async {
-    deleteRefreshTask = true;
-    setState(() {});
-
-    final NetworkResponse response = await NetworkCaller().getRequest(
-      Utils.deleteTask(widget.taskModel.sId!),
-    );
-
-    if (response.isSuccess) {
-      widget.onRefreshList();
-      showSnackBarMessage(context, 'Item deleted');
+    String url = Utils.deleteTask(widget.taskModel.sId!);
+    final bool result = await deleteController.deleteTask(url);
+    widget.onRefreshList();
+    if (result) {
+      CustomSnackbar.showSuccess('Delete Successfully');
     } else {
-      deleteRefreshTask = false;
-      setState(() {});
-      showSnackBarMessage(context, response.errorMessage, true);
+      CustomSnackbar.showError('Delete Field',
+          message: DeleteTaskController.errorMessage);
     }
   }
 
   Future<void> updateTask(String status) async {
-    updateRefreshTask = true;
-    setState(() {});
-
-    final NetworkResponse response = await NetworkCaller().getRequest(
-      Utils.updateTask(widget.taskModel.sId!, status),
-    );
-
-    if (response.isSuccess) {
-      widget.onRefreshList();
-      showSnackBarMessage(context, 'Item Updated');
+    String url = Utils.updateTask(widget.taskModel.sId!, status);
+    final bool result = await updateTaskController.updateTask(url);
+    widget.onRefreshList();
+    if (result) {
+      CustomSnackbar.showSuccess('Update Successfully');
     } else {
-      deleteRefreshTask = false;
-      setState(() {});
-      showSnackBarMessage(context, response.errorMessage, true);
+      CustomSnackbar.showError('Update Field',
+          message: UpdateTaskController.errorMessage);
     }
   }
 }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_management_project/Ui/Utils/Show_Snack_bar.dart';
 
 import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 import 'package:task_management_project/Ui/Widget/custom_appBar.dart';
 
-import 'package:task_management_project/data/controller/addTask_controller.dart';
+import '../../../data/controller/TaskController/addTask_controller.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -109,21 +110,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     if (result) {
       refreshPreviewPage = true;
       _clearTextFiled();
-      Get.snackbar(
-        'Task Added Successfully',
-        '',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.indigoAccent,
-        colorText: Colors.white,
-      );
+
+      CustomSnackbar.showSuccess('Task Added Successfully');
     } else {
-      Get.snackbar(
-        'Task Add Failed',
-        AddTaskScreenController.errorMessage ?? 'An unexpected error occurred.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      CustomSnackbar.showError('Task Add Failed',
+          message: AddTaskScreenController.errorMessage);
     }
   }
 

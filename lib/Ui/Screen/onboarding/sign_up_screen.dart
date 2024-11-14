@@ -1,30 +1,32 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_management_project/data/common/utils.dart';
-import 'package:task_management_project/data/model/network_response.dart';
-import 'package:task_management_project/data/services/networkCaller.dart';
+import 'package:get/get.dart';
+import 'package:task_management_project/Ui/Screen/onboarding/sign_in.dart';
+import 'package:task_management_project/data/controller/AuthController/signIn_controller.dart';
+import 'package:task_management_project/data/controller/AuthController/signup_controller.dart';
 
 import '../../Utils/color.dart';
-import '../../Widget/Show_Snack_bar.dart';
 import '../../Widget/backgroundImage.dart';
+import '../../Widget/show_snackBar.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
-static const String name='signUpScreen';
+
+  static const String name = 'signUpScreen';
+
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _emailTeController = TextEditingController();
-  TextEditingController _firstNameTeController = TextEditingController();
-  TextEditingController _lastNameTeController = TextEditingController();
-  TextEditingController _numberTeController = TextEditingController();
-  TextEditingController _passTeController = TextEditingController();
+  final SignInController signInController = Get.find<SignInController>();
 
-  bool _inProgress = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailTeController = TextEditingController();
+  final TextEditingController _firstNameTeController = TextEditingController();
+  final TextEditingController _lastNameTeController = TextEditingController();
+  final TextEditingController _numberTeController = TextEditingController();
+  final TextEditingController _passTeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -172,16 +174,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
           const SizedBox(
             height: 30,
           ),
-          Visibility(
-            visible: !_inProgress,
-            replacement: const Center(
-              child: CircularProgressIndicator(),
-            ),
-            child: ElevatedButton(
-              onPressed: _OnTabNextButton,
-              child: const Icon(Icons.arrow_circle_right),
-            ),
-          ),
+          GetBuilder<SignUpController>(builder: (controller) {
+            return Visibility(
+              visible: !controller.inProgress,
+              replacement: const Center(
+                child: CircularProgressIndicator(),
+              ),
+              child: ElevatedButton(
+                onPressed: _OnTabNextButton,
+                child: const Icon(Icons.arrow_circle_right),
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -218,25 +222,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _signUp() async {
-    _inProgress = true;
-    setState(() {});
-    Map<String, dynamic> bodyRequest = {
-      "email": _emailTeController.text.trim(),
-      "firstName": _firstNameTeController.text.trim(),
-      "lastName": _lastNameTeController.text.trim(),
-      "mobile": _numberTeController.text.trim(),
-      "password": _passTeController.text
-    };
-    NetworkResponse response = await NetworkCaller()
-        .postRequest(url: Utils.registration, body: bodyRequest);
+    final signUpController = SignUpController();
+    final bool result = await signUpController.signUp(
+        _emailTeController.text,
+        _firstNameTeController.text,
+        _lastNameTeController.text,
+        _numberTeController.text,
+        _passTeController.text);
 
-    _inProgress = false;
-    setState(() {});
-    if (response.isSuccess) {
+    if (result) {
       _clear();
-      showSnackBarMessage(context, 'New user create');
+      Get.offAllNamed(SignInScreen.name);
     } else {
-      showSnackBarMessage(context, response.errorMessage!, true);
+      CustomSnackbar.showError(
+          'Oto Sending Error', message: SignUpController.errorMessage);
     }
   }
 

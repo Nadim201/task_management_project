@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:task_management_project/Ui/Widget/Show_Snack_bar.dart';
+import 'package:task_management_project/Ui/Utils/Show_Snack_bar.dart';
 import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 import 'package:task_management_project/Ui/Widget/custom_appBar.dart';
 import 'package:task_management_project/data/common/utils.dart';
@@ -257,9 +257,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (response.isSuccess) {
       UserModel userModel = UserModel.fromJson(reqBody);
       AuthController.saveUserData(userModel);
-      showSnackBarMessage(context, 'Profile has been updated');
+      // showSnackBarMessage(context, 'Profile has been updated');
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      // showSnackBarMessage(context, response.errorMessage, true);
     }
 
     setState(() {

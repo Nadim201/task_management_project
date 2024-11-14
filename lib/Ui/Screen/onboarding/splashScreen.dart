@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:task_management_project/Ui/Screen/onboarding/sign_in.dart';
 import 'package:task_management_project/Ui/Utils/assets_path.dart';
@@ -30,19 +31,9 @@ class _SplashscreenState extends State<Splashscreen> {
 
     if (await AuthController.isSignedIn()) {
       await AuthController.getUserData();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const MainBottomNavBar(),
-        ),
-      );
+      Get.offAll(() => const MainBottomNavBar());
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const SignInScreen(),
-        ),
-      );
+      Get.offAll(() => const SignInScreen());
     }
   }
 

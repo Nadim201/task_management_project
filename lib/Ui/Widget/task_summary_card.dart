@@ -26,10 +26,10 @@ class TaskSummaryCard extends StatelessWidget {
                 '$counter',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
               ),
-              SizedBox(height: 2,),
-              Text(
-                title,style: TextStyle(color: Colors.grey,fontSize: 14)
-              )
+              SizedBox(
+                height: 2,
+              ),
+              Text(title, style: TextStyle(color: Colors.grey, fontSize: 14))
             ],
           ),
         ),

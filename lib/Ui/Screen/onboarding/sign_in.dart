@@ -2,17 +2,15 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/snackbar/snackbar.dart';
-
 import 'package:task_management_project/Ui/Screen/task/MainBottomNavBar.dart';
 import 'package:task_management_project/Ui/Screen/onboarding/sign_up_screen.dart';
 import 'package:task_management_project/Ui/Utils/color.dart';
 
 import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 
-import 'package:task_management_project/data/controller/signIn_controller.dart';
+import 'package:task_management_project/data/controller/AuthController/signIn_controller.dart';
 
+import '../../Utils/Show_Snack_bar.dart';
 import 'forgot_pass.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -134,19 +132,16 @@ class _SignInState extends State<SignInScreen> {
         const SizedBox(
           height: 30,
         ),
-        GetBuilder<SignInController>(
-
-          builder: (controller) {
-            return Visibility(
-              visible: !controller.inProgress,
-              replacement: const Center(child: CircularProgressIndicator()),
-              child: ElevatedButton(
-                onPressed: _OnTabNextButton,
-                child: const Icon(Icons.arrow_circle_right),
-              ),
-            );
-          }
-        ),
+        GetBuilder<SignInController>(builder: (controller) {
+          return Visibility(
+            visible: !controller.inProgress,
+            replacement: const Center(child: CircularProgressIndicator()),
+            child: ElevatedButton(
+              onPressed: _OnTabNextButton,
+              child: const Icon(Icons.arrow_circle_right),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -187,13 +182,8 @@ class _SignInState extends State<SignInScreen> {
     if (result) {
       Get.offAllNamed(MainBottomNavBar.name);
     } else {
-      Get.snackbar(
-        'Sign In Error',
-        SignInController.errorMessage ?? 'An unexpected error occurred.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      CustomSnackbar.showError('Oto Sending Error',
+          message: SignInController.errorMessage);
     }
   }
 

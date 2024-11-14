@@ -1,27 +1,33 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_management_project/Ui/Widget/Show_Snack_bar.dart';
+import 'package:get/get.dart';
+import 'package:task_management_project/Ui/Screen/onboarding/forgot_pass_otp.dart';
+import 'package:task_management_project/Ui/Utils/Show_Snack_bar.dart';
+import 'package:task_management_project/data/controller/AuthController/forgot_pass_controller.dart';
 
 import '../../../data/common/utils.dart';
-import '../../../data/model/network_response.dart';
-import '../../../data/services/networkCaller.dart';
 import '../../Utils/color.dart';
 import '../../Widget/backgroundImage.dart';
-import 'forgot_pass_otp.dart';
 
 class ForgotPass extends StatefulWidget {
   const ForgotPass({super.key});
-  static const String name='/forgotPassScreen';
+
+  static const String name = '/forgotPassScreen';
 
   @override
   State<ForgotPass> createState() => _ForgotPassState();
 }
 
 class _ForgotPassState extends State<ForgotPass> {
+  @override
+  void dispose() {
+    super.dispose();
+    _emController.dispose();
+  }
+
+  final forgotPassController = Get.find<ForgotPassController>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emController = TextEditingController();
-  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -98,14 +104,16 @@ class _ForgotPassState extends State<ForgotPass> {
         const SizedBox(
           height: 30,
         ),
-        Visibility(
-          visible: !isLoading,
-          replacement: const Center(child: CircularProgressIndicator()),
-          child: ElevatedButton(
-            onPressed: _OnTabNextButton,
-            child: const Icon(Icons.arrow_circle_right),
-          ),
-        ),
+        GetBuilder<ForgotPassController>(builder: (controller) {
+          return Visibility(
+            visible: !controller.inProgress,
+            replacement: const Center(child: CircularProgressIndicator()),
+            child: ElevatedButton(
+              onPressed: onTabNextButton,
+              child: const Icon(Icons.arrow_circle_right),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -124,43 +132,34 @@ class _ForgotPassState extends State<ForgotPass> {
           TextSpan(
             text: "Sign in?",
             style: const TextStyle(color: AppColor.themeColor, fontSize: 14),
-            recognizer: TapGestureRecognizer()..onTap = _onTapSignIn,
+            recognizer: TapGestureRecognizer()
+              ..onTap = _onTapSignIn,
           ),
         ],
       ),
     );
   }
 
-  void _OnTabNextButton() {
+  void onTabNextButton() {
     if (_formKey.currentState!.validate()) {
       forgotPass();
     }
   }
 
   Future<void> forgotPass() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    final emailText = _emController.text.trim();
-    String url = "${Utils.forgot}$emailText";
-
-    NetworkResponse response = await NetworkCaller().getRequest(url);
-
-    setState(() {
-      isLoading = false;
-    });
-    if (response.isSuccess) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ForgotPassOtp(
-            email: emailText,
-          ),
+    final email = _emController.text;
+    String url = "${Utils.forgot}$email";
+    final forgotPassController = ForgotPassController();
+    bool result = await forgotPassController.forgotPass(url);
+    if (result) {
+      Get.off(
+        ForgotPassOtp(
+          email: email,
         ),
       );
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      CustomSnackbar.showError(
+          'Oto Sending Error', message: ForgotPassController.errorMessage);
     }
   }
 

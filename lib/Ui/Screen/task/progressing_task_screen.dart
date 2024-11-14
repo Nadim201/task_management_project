@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_management_project/data/controller/ProgressingTaskController.dart';
+import 'package:task_management_project/data/controller/TaskController/ProgressingTaskController.dart';
 
+import '../../Utils/Show_Snack_bar.dart';
 import '../../Widget/CustomBodyTaskCard.dart';
 
 class ProgressingTaskScreen extends StatefulWidget {
@@ -58,13 +59,8 @@ class _ProgressingTaskScreenState extends State<ProgressingTaskScreen> {
   Future<void> getProgressingTask() async {
     bool result = await progressingTaskController.getProgressingTaskScreen();
     if (result == false) {
-      Get.snackbar(
-          'Something went wrong',
-          ProgressingTaskController.errorMessage ??
-              'An unexpected error occurred.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.indigoAccent,
-          colorText: Colors.white);
+      CustomSnackbar.showError('Something went wrong',
+          message: ProgressingTaskController.errorMessage);
     }
   }
 }

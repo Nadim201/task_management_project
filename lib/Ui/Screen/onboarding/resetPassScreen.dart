@@ -1,13 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_management_project/Ui/Screen/onboarding/sign_in.dart';
 import 'package:task_management_project/Ui/Utils/color.dart';
 import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
-import 'package:task_management_project/data/common/utils.dart';
-import 'package:task_management_project/data/model/network_response.dart';
-import 'package:task_management_project/data/services/networkCaller.dart';
 
-import '../../Widget/Show_Snack_bar.dart';
+import 'package:task_management_project/data/controller/AuthController/reset_pass_controller.dart';
+
+import '../../Utils/Show_Snack_bar.dart';
 
 class ResetPassScreen extends StatefulWidget {
   const ResetPassScreen({super.key, required this.email, required this.otp});
@@ -20,6 +20,7 @@ class ResetPassScreen extends StatefulWidget {
 }
 
 class _ResetPassScreenState extends State<ResetPassScreen> {
+  final resetPassScreenController = Get.find<ResetPassController>();
   final TextEditingController _setPassController = TextEditingController();
   final TextEditingController _conPassController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -130,10 +131,16 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
         const SizedBox(
           height: 30,
         ),
-        ElevatedButton(
-          onPressed: _OnTabNextButton,
-          child: const Icon(Icons.arrow_circle_right),
-        ),
+        GetBuilder<ResetPassController>(builder: (controller) {
+          return Visibility(
+            visible: !controller.inProgress,
+            replacement: Center(child: CircularProgressIndicator()),
+            child: ElevatedButton(
+              onPressed: _OnTabNextButton,
+              child: const Icon(Icons.arrow_circle_right),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -171,42 +178,22 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
       return;
     }
 
-    isLoading = true;
-    setState(() {});
-
-    Map<String, dynamic> requestBody = {
-      "email": widget.email,
-      "OTP": widget.otp,
-      "password": _setPassController.text,
-    };
-
-    NetworkResponse response = await NetworkCaller().postRequest(
-      url: Utils.reset,
-      body: requestBody,
-    );
-
-    isLoading = false;
-    setState(() {});
-
-    if (response.isSuccess) {
-      showSnackBarMessage(context, response.responseData['data']);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const SignInScreen(),
-        ),
-      );
+    final resetPassScreenController = ResetPassController();
+    bool result = await resetPassScreenController.setPassword(
+        widget.email, widget.otp, _setPassController.text);
+    if (result) {
+      Get.off(const SignInScreen());
+      _setPassController.clear();
+      _conPassController.clear();
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      CustomSnackbar.showError('Oto Sending Error',
+          message: ResetPassController.errorMessage);
     }
   }
 
   void _onTapSignIn() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SignInScreen(),
-      ),
+    Get.to(
+      SignInScreen(),
     );
   }
 }

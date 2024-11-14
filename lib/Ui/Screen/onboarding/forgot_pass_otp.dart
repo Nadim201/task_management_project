@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:task_management_project/Ui/Screen/onboarding/resetPassScreen.dart';
 import 'package:task_management_project/Ui/Screen/onboarding/sign_in.dart';
@@ -7,13 +9,13 @@ import 'package:task_management_project/Ui/Utils/color.dart';
 import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 
 import '../../../data/common/utils.dart';
-import '../../../data/model/network_response.dart';
-import '../../../data/services/networkCaller.dart';
-import '../../Widget/Show_Snack_bar.dart';
+import '../../../data/controller/AuthController/forgot_pass_otp_controller.dart';
+import '../../Utils/Show_Snack_bar.dart';
 
 class ForgotPassOtp extends StatefulWidget {
   const ForgotPassOtp({super.key, required this.email});
 
+  static const String name = '/forgotOtpScreen';
   final String email;
 
   @override
@@ -21,11 +23,10 @@ class ForgotPassOtp extends StatefulWidget {
 }
 
 class _ForgotPassOtpState extends State<ForgotPassOtp> {
+  final forgotPassOtpController = Get.find<ForgotPassOtpController>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _pinController = TextEditingController();
-
-  late bool _isLoading = false;
 
   @override
   void dispose() {
@@ -116,14 +117,16 @@ class _ForgotPassOtpState extends State<ForgotPassOtp> {
         const SizedBox(
           height: 30,
         ),
-        Visibility(
-          visible: !_isLoading,
-          replacement: const Center(child: CircularProgressIndicator()),
-          child: ElevatedButton(
-            onPressed: _OnTabNextButton,
-            child: const Text('Verify'),
-          ),
-        ),
+        GetBuilder<ForgotPassOtpController>(builder: (controller) {
+          return Visibility(
+            visible: !controller.inProgress,
+            replacement: const Center(child: CircularProgressIndicator()),
+            child: ElevatedButton(
+              onPressed: _OnTabNextButton,
+              child: const Text('Verify'),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -149,48 +152,32 @@ class _ForgotPassOtpState extends State<ForgotPassOtp> {
 
   void _OnTabNextButton() {
     if (_formKey.currentState!.validate()) {
-      forgotPass();
+      if (mounted) {
+        forgotPass();
+      }
     }
   }
 
   Future<void> forgotPass() async {
-    setState(() {
-      _isLoading = true;
-    });
-
     final otp = _pinController.text;
     final email = widget.email;
-    print('check pintext value: $otp');
     String url = "${Utils.pin}${widget.email}/$otp";
-
-    NetworkResponse response = await NetworkCaller().getRequest(url);
-
-    if (!mounted) return;
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (response.isSuccess) {
-      showSnackBarMessage(context, response.responseData['data']);
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ResetPassScreen(email: email, otp: otp),
+    final forgotPassOtpController = ForgotPassOtpController();
+    bool result = await forgotPassOtpController.forgotPass(url);
+    if (result) {
+      Get.off(
+        ResetPassScreen(
+          email: email,
+          otp: otp,
         ),
       );
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      CustomSnackbar.showError(
+          'Oto Sending Error', message: ForgotPassOtpController.errorMessage);
     }
   }
 
   void _onTapSignIn() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SignInScreen(),
-      ),
-    );
+    Get.to(SignInScreen);
   }
 }

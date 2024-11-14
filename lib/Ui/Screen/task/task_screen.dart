@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_management_project/Ui/Screen/task/add_task_screen.dart';
+import 'package:task_management_project/Ui/Utils/Show_Snack_bar.dart';
 import 'package:task_management_project/Ui/Utils/color.dart';
 import 'package:task_management_project/Ui/Widget/CustomBodyTaskCard.dart';
 import 'package:task_management_project/Ui/Widget/task_summary_card.dart';
+import 'package:task_management_project/data/controller/TaskController/counter_status_controller.dart';
 
-import '../../../data/controller/task_screen_controller.dart';
+import '../../../data/controller/TaskController/task_screen_controller.dart';
+
 import '../../../data/model/task_counter_model.dart';
 
 class NewTaskScreen extends StatefulWidget {
@@ -16,8 +19,10 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
-  late final StatusModel statusModel;
-  TaskScreenController taskScreenController = Get.find<TaskScreenController>();
+  // late final StatusModel statusModel;
+  TaskListController taskScreenController = Get.find<TaskListController>();
+  TaskCounterController taskCounterController =
+      Get.find<TaskCounterController>();
 
   @override
   void initState() {
@@ -41,7 +46,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
             children: [
               buildSummarySection(),
               Expanded(
-                child: GetBuilder<TaskScreenController>(builder: (controller) {
+                child: GetBuilder<TaskListController>(builder: (controller) {
                   return Visibility(
                     visible: !controller.inProgress,
                     replacement:
@@ -50,8 +55,8 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                       itemCount: controller.taskList.length,
                       itemBuilder: (context, index) {
                         return BodyTaskCardSection(
-                          taskModel: controller.taskList[index],
                           onRefreshList: getNewTaskScreen,
+                          taskModel: controller.taskList[index],
                         );
                       },
                       separatorBuilder: (context, index) {
@@ -81,7 +86,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   Padding buildSummarySection() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: GetBuilder<TaskScreenController>(builder: (controller) {
+      child: GetBuilder<TaskCounterController>(builder: (controller) {
         return Visibility(
           visible: !controller.inProgress,
           replacement:
@@ -89,10 +94,13 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-                children: controller.taskCounterList
-                    .map((task) => TaskSummaryCard(
-                        title: task.sId!, counter: task.sum ?? 0))
-                    .toList()),
+              children: controller.taskCounterList
+                  .map(
+                    (task) => TaskSummaryCard(
+                        title: task.sId!, counter: task.sum ?? 0,),
+                  )
+                  .toList(),
+            ),
           ),
         );
       }),
@@ -157,26 +165,18 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   Future<void> getNewTaskScreen() async {
     final bool result = await taskScreenController.getNewTaskScreen();
     if (result == false) {
-      Get.snackbar(
-        'TaskList In Error',
-        TaskScreenController.errorMessage ?? 'An unexpected error occurred.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      CustomSnackbar.showError('TaskList In Error',
+          message: taskCounterController
+              .errorMessage); // Use taskScreenController's errorMessage
     }
   }
 
   Future<void> getStatusCounter() async {
-    final bool result = await taskScreenController.getStatusCounter();
+    final bool result = await taskCounterController.getStatusCounter();
     if (result == false) {
-      Get.snackbar(
-        'TaskCounterList In Error',
-        TaskScreenController.errorMessage ?? 'An unexpected error occurred.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      CustomSnackbar.showError('TaskCounterList In Error',
+          message: taskCounterController
+              .errorMessage); // Use taskCounterController's errorMessage
     }
   }
 }

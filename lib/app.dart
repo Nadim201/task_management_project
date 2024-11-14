@@ -7,16 +7,11 @@ import 'package:task_management_project/Ui/Screen/onboarding/sign_up_screen.dart
 import 'package:task_management_project/Ui/Screen/onboarding/splashScreen.dart';
 import 'package:task_management_project/Ui/Utils/color.dart';
 
+import 'Ui/Screen/onboarding/forgot_pass_otp.dart';
 import 'Ui/Screen/task/MainBottomNavBar.dart';
+
 import 'Ui/Screen/task/add_task_screen.dart';
 import 'controllerBinding.dart';
-
-class Routes {
-  static const String splash = Splashscreen.name;
-  static const String signIn = SignInScreen.name;
-  static const String forgotPassword = ForgotPass.name;
-  static const String signUp = SignUpScreen.name;
-}
 
 class TaskManagerApp extends StatelessWidget {
   const TaskManagerApp({super.key});
@@ -27,13 +22,13 @@ class TaskManagerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       navigatorKey: navigatorKey,
-      initialRoute: Routes.splash,
+      initialRoute: Splashscreen.name,
       initialBinding: ControllerBinding(),
       routes: {
-        Routes.splash: (context) => const Splashscreen(),
-        Routes.signIn: (context) => const SignInScreen(),
-        Routes.forgotPassword: (context) => const ForgotPass(),
-        Routes.signUp: (context) => const SignUpScreen(),
+        Splashscreen.name: (context) => const Splashscreen(),
+        SignInScreen.name: (context) => const SignInScreen(),
+        ForgotPass.name: (context) => const ForgotPass(),
+        SignUpScreen.name: (context) => const SignUpScreen(),
         MainBottomNavBar.name: (context) => const MainBottomNavBar(),
         AddTaskScreen.name: (context) => const AddTaskScreen(),
       },
@@ -43,7 +38,8 @@ class TaskManagerApp extends StatelessWidget {
         colorSchemeSeed: AppColor.themeColor,
         textTheme: GoogleFonts.poppinsTextTheme().copyWith(
           bodyLarge: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-          titleLarge: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          titleLarge:
+              const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         inputDecorationTheme: _inputDecorationTheme(),
         elevatedButtonTheme: _elevatedButtonTheme(),

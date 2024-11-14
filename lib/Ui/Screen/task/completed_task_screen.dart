@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../data/controller/compeleted_task_controller.dart';
+import 'package:task_management_project/Ui/Utils/Show_Snack_bar.dart';
+import '../../../data/controller/TaskController/compeleted_task_controller.dart';
 import '../../Widget/CustomBodyTaskCard.dart';
 
 class CompletedTaskScreen extends StatefulWidget {
@@ -55,13 +56,7 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
   Future<void> getNewTaskScreen() async {
     bool result = await completedTaskController.getCompletedTaskScreen();
     if (result == false) {
-      Get.snackbar(
-          'Something went wrong',
-          CompletedTaskController.errorMessage ??
-              'An unexpected error occurred.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.indigoAccent,
-          colorText: Colors.white);
+      CustomSnackbar.showError( 'Something went wrong',message: CompletedTaskController.errorMessage);
     }
   }
 }

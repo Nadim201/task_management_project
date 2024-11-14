@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_management_project/data/controller/cancel_task_screen_controller.dart';
+import 'package:task_management_project/Ui/Utils/Show_Snack_bar.dart';
 
-import '../../../data/model/task_model.dart';
+import '../../../data/controller/TaskController/cancel_task_screen_controller.dart';
+
 import '../../Widget/CustomBodyTaskCard.dart';
 
 class CancelTaskScreen extends StatefulWidget {
@@ -59,11 +60,8 @@ class _CancelTaskScreenState extends State<CancelTaskScreen> {
   Future<void> getCancelTask() async {
     bool result = await cancelTaskController.getCancelTaskScreen();
     if (result == false) {
-      Get.snackbar('Something went wrong',
-          CancelTaskController.errorMessage ?? 'An unexpected error occurred.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.indigoAccent,
-          colorText: Colors.white);
+      CustomSnackbar.showError('Task Cancel Failed',
+          message: CancelTaskController.errorMessage);
     }
   }
 }
