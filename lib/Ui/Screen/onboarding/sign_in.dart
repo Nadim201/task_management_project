@@ -195,3 +195,4 @@ class _SignInState extends State<SignInScreen> {
     Get.toNamed(SignUpScreen.name);
   }
 }
+//

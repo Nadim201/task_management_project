@@ -119,3 +119,4 @@ class NetworkCaller {
         (predicate) => false);
   }
 }
+//

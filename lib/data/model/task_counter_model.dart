@@ -9,3 +9,4 @@ class StatusModel {
     sum = json['sum'];
   }
 }
+//

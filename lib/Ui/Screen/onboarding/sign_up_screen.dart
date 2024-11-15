@@ -247,3 +247,4 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _passTeController.clear();
   }
 }
+//
