@@ -101,34 +101,20 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
                   ),
                   Row(
                     children: [
-                      GetBuilder<UpdateTaskController>(builder: (controller) {
-                        return Visibility(
-                          visible: !controller.inProgress,
-                          replacement:
-                              const Center(child: CircularProgressIndicator()),
-                          child: IconButton(
-                            onPressed: () => onTabEdit(context),
-                            icon: const Icon(
-                              Icons.edit_note,
-                              color: AppColor.themeColor,
-                            ),
-                          ),
-                        );
-                      }),
-                      GetBuilder<DeleteTaskController>(builder: (controller) {
-                        return Visibility(
-                          visible: !controller.inProgress,
-                          replacement:
-                              const Center(child: CircularProgressIndicator()),
-                          child: IconButton(
-                            onPressed: deleteTask,
-                            icon: const Icon(
-                              Icons.delete_sweep_outlined,
-                              color: Colors.red,
-                            ),
-                          ),
-                        );
-                      })
+                      IconButton(
+                        onPressed: () => onTabEdit(context),
+                        icon: const Icon(
+                          Icons.edit_note,
+                          color: AppColor.themeColor,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: deleteTask,
+                        icon: const Icon(
+                          Icons.delete_sweep_outlined,
+                          color: Colors.red,
+                        ),
+                      )
                     ],
                   ),
                 ],

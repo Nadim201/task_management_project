@@ -55,7 +55,10 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                       itemCount: controller.taskList.length,
                       itemBuilder: (context, index) {
                         return BodyTaskCardSection(
-                          onRefreshList: getNewTaskScreen,
+                          onRefreshList: (){
+                            getNewTaskScreen();
+                            getStatusCounter();
+                          },
                           taskModel: controller.taskList[index],
                         );
                       },
@@ -97,7 +100,9 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
               children: controller.taskCounterList
                   .map(
                     (task) => TaskSummaryCard(
-                        title: task.sId!, counter: task.sum ?? 0,),
+                      title: task.sId!,
+                      counter: task.sum ?? 0,
+                    ),
                   )
                   .toList(),
             ),
@@ -164,7 +169,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 
   Future<void> getNewTaskScreen() async {
     final bool result = await taskScreenController.getNewTaskScreen();
-    if (result == false) {
+    if (!result) {
       CustomSnackbar.showError('TaskList In Error',
           message: taskCounterController
               .errorMessage); // Use taskScreenController's errorMessage
@@ -180,3 +185,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     }
   }
 }
+
+
+

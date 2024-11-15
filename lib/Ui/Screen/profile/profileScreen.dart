@@ -2,15 +2,15 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:task_management_project/Ui/Utils/Show_Snack_bar.dart';
+import 'package:task_management_project/Ui/Utils/custom_toaste_message.dart';
 import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 import 'package:task_management_project/Ui/Widget/custom_appBar.dart';
-import 'package:task_management_project/data/common/utils.dart';
+
 import 'package:task_management_project/data/controller/auth_controller.dart';
-import 'package:task_management_project/data/model/network_response.dart';
-import 'package:task_management_project/data/model/user_data.dart';
-import 'package:task_management_project/data/services/networkCaller.dart';
+import 'package:task_management_project/data/controller/profile/profile_screen_controller.dart';
 
 import '../../Utils/color.dart';
 
@@ -28,7 +28,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool updateProfileProgress = false;
+
+  final controller = Get.find<ProfileScreenController>();
+
   XFile? selectedImage;
 
   @override
@@ -147,19 +149,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Visibility buildUpdateButton() {
-    return Visibility(
-      visible: !updateProfileProgress,
-      replacement: const Center(child: CircularProgressIndicator()),
-      child: ElevatedButton(
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            updateProfile();
-          }
-        },
-        child: const Icon(Icons.arrow_circle_right_outlined),
-      ),
-    );
+  buildUpdateButton() {
+    return GetBuilder<ProfileScreenController>(builder: (controller) {
+      return Visibility(
+        visible: !controller.inProgress,
+        replacement: const Center(child: CircularProgressIndicator()),
+        child: ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              updateProfile();
+            }
+          },
+          child: const Icon(Icons.arrow_circle_right_outlined),
+        ),
+      );
+    });
   }
 
   GestureDetector buildPhotoSection() {
@@ -188,8 +192,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 backgroundImage: selectedImage != null
                     ? FileImage(File(selectedImage!.path))
                     : AuthController.userData?.photo != null
-                    ? MemoryImage(base64Decode(AuthController.userData!.photo!))
-                    : const AssetImage('assets/images/pexels-photo-771742.jpg') as ImageProvider,
+                        ? MemoryImage(
+                            base64Decode(AuthController.userData!.photo!))
+                        : const AssetImage(
+                                'assets/images/pexels-photo-771742.jpg')
+                            as ImageProvider,
               ),
             ),
             Positioned(
@@ -210,7 +217,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ],
                 ),
-                child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                child:
+                    const Icon(Icons.camera_alt, color: Colors.white, size: 20),
               ),
             ),
           ],
@@ -230,41 +238,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> updateProfile() async {
-    setState(() {
-      updateProfileProgress = true;
-    });
+    final bool result = await controller.updateProfile(
+        email: _emTEController.text,
+        firstName: _firstTEController.text,
+        lastName: _lastTEController.text,
+        mobile: _mobileTEController.text,
+        photo: AuthController.userData?.photo,
+        selectedImage: selectedImage,
+        password: _passTEController.text);
 
-    final Map<String, dynamic> reqBody = {
-      "email": _emTEController.text.trim(),
-      "firstName": _firstTEController.text.trim(),
-      "lastName": _lastTEController.text.trim(),
-      "mobile": _mobileTEController.text.trim(),
-    };
-
-    if (_passTEController.text.isNotEmpty) {
-      reqBody['password'] = _passTEController.text.trim();
-    }
-
-    if (selectedImage != null) {
-      List<int> imageByte = await selectedImage!.readAsBytes();
-      String convertImage = base64Encode(imageByte);
-      reqBody['photo'] = convertImage;
-      print('Images: $convertImage');
-    }
-
-    final NetworkResponse response = await NetworkCaller().postRequest(url: Utils.updateProfile, body: reqBody);
-
-    if (response.isSuccess) {
-      UserModel userModel = UserModel.fromJson(reqBody);
-      AuthController.saveUserData(userModel);
-      // showSnackBarMessage(context, 'Profile has been updated');
+    if (result) {
+      ToastMessage.showToast('Update success');
     } else {
-      // showSnackBarMessage(context, response.errorMessage, true);
+      ToastMessage.errorToast('Update fail');
     }
-
-    setState(() {
-      updateProfileProgress = false;
-    });
   }
 }
-
