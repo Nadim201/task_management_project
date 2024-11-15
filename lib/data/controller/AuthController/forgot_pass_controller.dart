@@ -27,4 +27,4 @@ class ForgotPassController extends GetxController {
     return isSuccess;
   }
 }
-//
+//up
