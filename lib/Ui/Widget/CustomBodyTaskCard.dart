@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_management_project/Ui/Utils/custom_toaste_message.dart';
 import 'package:task_management_project/data/controller/TaskController/delete-task_controller.dart';
 import 'package:task_management_project/data/controller/TaskController/update_task_controller.dart';
 
@@ -177,10 +178,9 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
     final bool result = await deleteController.deleteTask(url);
     widget.onRefreshList();
     if (result) {
-      CustomSnackbar.showSuccess('Delete Successfully');
+      ToastMessage.showToast('Task Delete Successfully');
     } else {
-      CustomSnackbar.showError('Delete Field',
-          message: DeleteTaskController.errorMessage);
+      ToastMessage.errorToast('Task Delete Failed');
     }
   }
 
@@ -189,11 +189,9 @@ class _BodyTaskCardSectionState extends State<BodyTaskCardSection> {
     final bool result = await updateTaskController.updateTask(url);
     widget.onRefreshList();
     if (result) {
-      CustomSnackbar.showSuccess('Update Successfully');
+      ToastMessage.showToast('Task Update Successfully');
     } else {
-      CustomSnackbar.showError('Update Field',
-          message: UpdateTaskController.errorMessage);
+      ToastMessage.errorToast('Task Update Failed');
     }
   }
 }
-//
