@@ -52,6 +52,7 @@ class Assets {
   static const String taskTaskScreen = 'lib/Ui/Screen/task/task_screen.dart';
   static const String utilsAssetsPath = 'lib/Ui/Utils/assets_path.dart';
   static const String utilsColor = 'lib/Ui/Utils/color.dart';
+  static const String utilsCustomIndicator = 'lib/Ui/Utils/custom_indicator.dart';
   static const String utilsCustomToasteMessage = 'lib/Ui/Utils/custom_toaste_message.dart';
   static const String utilsShowSnackBar = 'lib/Ui/Utils/Show_Snack_bar.dart';
   static const String widgetBackgroundImage = 'lib/Ui/Widget/backgroundImage.dart';

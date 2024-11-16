@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_management_project/Ui/Utils/Show_Snack_bar.dart';
 import '../../../data/controller/TaskController/compeleted_task_controller.dart';
+import '../../Utils/custom_indicator.dart';
 import '../../Widget/CustomBodyTaskCard.dart';
 
 class CompletedTaskScreen extends StatefulWidget {
@@ -27,7 +28,7 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
       body: GetBuilder<CompletedTaskController>(builder: (controller) {
         return Visibility(
           visible: !controller.inProgress,
-          replacement: const Center(child: CircularProgressIndicator()),
+          replacement:  Center(child: CustomIndicator()),
           child: RefreshIndicator(
             onRefresh: () async {},
             child: Padding(

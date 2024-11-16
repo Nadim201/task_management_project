@@ -8,12 +8,17 @@ import '../auth_controller.dart';
 
 class SignInController extends GetxController {
   bool _inProgress = false;
+
   bool get inProgress => _inProgress;
   static String? _errorMessage;
+  bool obscureText = true;
 
- static String? get errorMessage => _errorMessage;
+  static String? get errorMessage => _errorMessage;
 
-
+  void toggleVisibility() {
+    obscureText = !obscureText;
+    update();
+  }
 
   Future<bool> signIn(String email, String password) async {
     bool isSuccess = false;

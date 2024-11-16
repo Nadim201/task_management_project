@@ -11,6 +11,7 @@ import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 import '../../../data/common/utils.dart';
 import '../../../data/controller/AuthController/forgot_pass_otp_controller.dart';
 import '../../Utils/Show_Snack_bar.dart';
+import '../../Utils/custom_indicator.dart';
 
 class ForgotPassOtp extends StatefulWidget {
   const ForgotPassOtp({super.key, required this.email});
@@ -120,7 +121,7 @@ class _ForgotPassOtpState extends State<ForgotPassOtp> {
         GetBuilder<ForgotPassOtpController>(builder: (controller) {
           return Visibility(
             visible: !controller.inProgress,
-            replacement: const Center(child: CircularProgressIndicator()),
+            replacement:  Center(child: CustomIndicator()),
             child: ElevatedButton(
               onPressed: _OnTabNextButton,
               child: const Text('Verify'),

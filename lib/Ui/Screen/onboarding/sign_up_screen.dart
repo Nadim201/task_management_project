@@ -6,6 +6,7 @@ import 'package:task_management_project/data/controller/AuthController/signIn_co
 import 'package:task_management_project/data/controller/AuthController/signup_controller.dart';
 
 import '../../Utils/color.dart';
+import '../../Utils/custom_indicator.dart';
 import '../../Widget/backgroundImage.dart';
 import '../../Widget/show_snackBar.dart';
 
@@ -177,9 +178,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           GetBuilder<SignUpController>(builder: (controller) {
             return Visibility(
               visible: !controller.inProgress,
-              replacement: const Center(
-                child: CircularProgressIndicator(),
-              ),
+              replacement: const  Center(child: CustomIndicator()),
               child: ElevatedButton(
                 onPressed: _OnTabNextButton,
                 child: const Icon(Icons.arrow_circle_right),

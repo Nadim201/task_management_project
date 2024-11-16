@@ -4,6 +4,7 @@ import 'package:task_management_project/Ui/Utils/Show_Snack_bar.dart';
 
 import '../../../data/controller/TaskController/cancel_task_screen_controller.dart';
 
+import '../../Utils/custom_indicator.dart';
 import '../../Widget/CustomBodyTaskCard.dart';
 
 class CancelTaskScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _CancelTaskScreenState extends State<CancelTaskScreen> {
       body: GetBuilder<CancelTaskController>(builder: (controller) {
         return Visibility(
           visible: !controller.inProgress,
-          replacement: const Center(child: CircularProgressIndicator()),
+          replacement: Center(child: CustomIndicator()),
           child: RefreshIndicator(
             onRefresh: () async {
               getCancelTask();

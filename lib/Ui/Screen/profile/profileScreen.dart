@@ -13,6 +13,7 @@ import 'package:task_management_project/data/controller/auth_controller.dart';
 import 'package:task_management_project/data/controller/profile/profile_screen_controller.dart';
 
 import '../../Utils/color.dart';
+import '../../Utils/custom_indicator.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -50,8 +51,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppbar(
-        isProfile: true,
+      appBar: AppBar(
+        foregroundColor: Colors.white,
+        backgroundColor: AppColor.themeColor,
+        title: Text('Update Profile'),
       ),
       body: Backgroundimage(
         child: Padding(
@@ -153,7 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GetBuilder<ProfileScreenController>(builder: (controller) {
       return Visibility(
         visible: !controller.inProgress,
-        replacement: const Center(child: CircularProgressIndicator()),
+        replacement: Center(child: CustomIndicator()),
         child: ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {

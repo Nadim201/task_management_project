@@ -11,6 +11,7 @@ import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 import 'package:task_management_project/data/controller/AuthController/signIn_controller.dart';
 
 import '../../Utils/Show_Snack_bar.dart';
+import '../../Utils/custom_indicator.dart';
 import 'forgot_pass.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -23,7 +24,7 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInState extends State<SignInScreen> {
-  final bool _inProgress = false;
+  final controller = SignInController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
@@ -105,6 +106,7 @@ class _SignInState extends State<SignInScreen> {
           height: 20,
         ),
         TextFormField(
+          obscureText: controller.obscureText,
           controller: _passwordTEController,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
@@ -113,8 +115,10 @@ class _SignInState extends State<SignInScreen> {
             fillColor: Colors.white,
             filled: true,
             suffixIcon: IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.visibility_off_outlined),
+              onPressed:controller.toggleVisibility,
+              icon:Icon(controller.obscureText
+                    ? Icons.visibility_off
+                    : Icons.visibility)
             ),
             prefixIcon: const Icon(Icons.password),
           ),
@@ -135,7 +139,7 @@ class _SignInState extends State<SignInScreen> {
         GetBuilder<SignInController>(builder: (controller) {
           return Visibility(
             visible: !controller.inProgress,
-            replacement: const Center(child: CircularProgressIndicator()),
+            replacement: Center(child: CustomIndicator()),
             child: ElevatedButton(
               onPressed: _OnTabNextButton,
               child: const Icon(Icons.arrow_circle_right),
@@ -173,8 +177,7 @@ class _SignInState extends State<SignInScreen> {
   }
 
   Future<void> _signIn() async {
-    final signInController = SignInController();
-    final bool result = await signInController.signIn(
+    final bool result = await controller.signIn(
       _emailTEController.text.trim(),
       _passwordTEController.text,
     );

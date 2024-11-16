@@ -8,6 +8,7 @@ import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 import 'package:task_management_project/data/controller/AuthController/reset_pass_controller.dart';
 
 import '../../Utils/Show_Snack_bar.dart';
+import '../../Utils/custom_indicator.dart';
 
 class ResetPassScreen extends StatefulWidget {
   const ResetPassScreen({super.key, required this.email, required this.otp});
@@ -134,7 +135,7 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
         GetBuilder<ResetPassController>(builder: (controller) {
           return Visibility(
             visible: !controller.inProgress,
-            replacement: Center(child: CircularProgressIndicator()),
+            replacement:  Center(child: CustomIndicator()),
             child: ElevatedButton(
               onPressed: _OnTabNextButton,
               child: const Icon(Icons.arrow_circle_right),

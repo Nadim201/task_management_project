@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:task_management_project/data/controller/TaskController/ProgressingTaskController.dart';
 
 import '../../Utils/Show_Snack_bar.dart';
+import '../../Utils/custom_indicator.dart';
 import '../../Widget/CustomBodyTaskCard.dart';
 
 class ProgressingTaskScreen extends StatefulWidget {
@@ -28,7 +29,7 @@ class _ProgressingTaskScreenState extends State<ProgressingTaskScreen> {
       body: GetBuilder<ProgressingTaskController>(builder: (controller) {
         return Visibility(
           visible: !controller.inProgress,
-          replacement: const Center(child: CircularProgressIndicator()),
+          replacement: Center(child: CustomIndicator()),
           child: RefreshIndicator(
             onRefresh: () async {
               getProgressingTask();

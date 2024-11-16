@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:task_management_project/Ui/Utils/Show_Snack_bar.dart';
+import 'package:task_management_project/Ui/Utils/color.dart';
 
 import 'package:task_management_project/Ui/Widget/backgroundImage.dart';
 import 'package:task_management_project/Ui/Widget/custom_appBar.dart';
@@ -34,7 +35,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         Navigator.pop(context, refreshPreviewPage);
       },
       child: Scaffold(
-        appBar: const CustomAppbar(),
+        appBar: AppBar(
+          foregroundColor: Colors.white,
+          backgroundColor: AppColor.themeColor,
+          title: Text('Add New Task'),
+        ),
         body: Backgroundimage(
           child: Padding(
             padding: const EdgeInsets.all(16.0),

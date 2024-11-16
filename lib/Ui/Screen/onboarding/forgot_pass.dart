@@ -7,6 +7,7 @@ import 'package:task_management_project/data/controller/AuthController/forgot_pa
 
 import '../../../data/common/utils.dart';
 import '../../Utils/color.dart';
+import '../../Utils/custom_indicator.dart';
 import '../../Widget/backgroundImage.dart';
 
 class ForgotPass extends StatefulWidget {
@@ -107,7 +108,7 @@ class _ForgotPassState extends State<ForgotPass> {
         GetBuilder<ForgotPassController>(builder: (controller) {
           return Visibility(
             visible: !controller.inProgress,
-            replacement: const Center(child: CircularProgressIndicator()),
+            replacement:  Center(child: CustomIndicator()),
             child: ElevatedButton(
               onPressed: onTabNextButton,
               child: const Icon(Icons.arrow_circle_right),

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:task_management_project/Ui/Screen/task/add_task_screen.dart';
 import 'package:task_management_project/Ui/Utils/Show_Snack_bar.dart';
 import 'package:task_management_project/Ui/Utils/color.dart';
+import 'package:task_management_project/Ui/Utils/custom_indicator.dart';
 import 'package:task_management_project/Ui/Widget/CustomBodyTaskCard.dart';
 import 'package:task_management_project/Ui/Widget/task_summary_card.dart';
 import 'package:task_management_project/data/controller/TaskController/counter_status_controller.dart';
@@ -50,12 +51,12 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                   return Visibility(
                     visible: !controller.inProgress,
                     replacement:
-                        const Center(child: CircularProgressIndicator()),
+                    Center(child: CustomIndicator()),
                     child: ListView.separated(
                       itemCount: controller.taskList.length,
                       itemBuilder: (context, index) {
                         return BodyTaskCardSection(
-                          onRefreshList: (){
+                          onRefreshList: () {
                             getNewTaskScreen();
                             getStatusCounter();
                           },
@@ -92,8 +93,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       child: GetBuilder<TaskCounterController>(builder: (controller) {
         return Visibility(
           visible: !controller.inProgress,
-          replacement:
-              const Center(child: Center(child: CircularProgressIndicator())),
+          replacement: Center(child: CustomIndicator()),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
